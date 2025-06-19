@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paramètres - MySchool 221</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-graduation-cap"></i> MySchool 221</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="index.html"><i class="fas fa-home"></i> Tableau de bord</a>
+                <a href="ecoles.html"><i class="fas fa-school"></i> Écoles</a>
+                <a href="enseignants.html"><i class="fas fa-chalkboard-teacher"></i> Enseignants</a>
+                <a href="eleves.html"><i class="fas fa-user-graduate"></i> Élèves</a>
+                <a href="classes.html"><i class="fas fa-users"></i> Classes</a>
+                <a href="emplois-temps.html"><i class="fas fa-calendar-alt"></i> Emplois du temps</a>
+                <a href="notes.html"><i class="fas fa-clipboard-list"></i> Notes</a>
+                <a href="presences.html"><i class="fas fa-user-check"></i> Présences</a>
+                <a href="communication.html"><i class="fas fa-comments"></i> Communication</a>
+                <a href="finances.html"><i class="fas fa-money-bill-wave"></i> Finances</a>
+                <a href="rapports.html"><i class="fas fa-chart-bar"></i> Rapports</a>
+                <a href="parametres.html" class="active"><i class="fas fa-cog"></i> Paramètres</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <h1><i class="fas fa-cog"></i> Paramètres du Système</h1>
+                <div class="header-actions">
+                    <button class="btn btn-success" onclick="saveSettings()">
+                        <i class="fas fa-save"></i> Sauvegarder
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetSettings()">
+                        <i class="fas fa-undo"></i> Réinitialiser
+                    </button>
+                </div>
+            </header>
+
+            <!-- Settings Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="showTab('general')">
+                    <i class="fas fa-cog"></i> Général
+                </button>
+                <button class="tab-btn" onclick="showTab('utilisateurs')">
+                    <i class="fas fa-users"></i> Utilisateurs
+                </button>
+                <button class="tab-btn" onclick="showTab('securite')">
+                    <i class="fas fa-shield-alt"></i> Sécurité
+                </button>
+                <button class="tab-btn" onclick="showTab('notifications')">
+                    <i class="fas fa-bell"></i> Notifications
+                </button>
+                <button class="tab-btn" onclick="showTab('sauvegarde')">
+                    <i class="fas fa-database"></i> Sauvegarde
+                </button>
+                <button class="tab-btn" onclick="showTab('systeme')">
+                    <i class="fas fa-server"></i> Système
+                </button>
+            </div>
+
+            <!-- General Settings Tab -->
+            <div id="general" class="tab-content active">
+                <div class="settings-section">
+                    <h3>Informations Générales</h3>
+                    <div class="settings-grid">
+                        <div class="form-group">
+                            <label>Nom de l'établissement</label>
+                            <input type="text" class="form-control" value="MySchool 221">
+                        </div>
+                        <div class="form-group">
+                            <label>Adresse</label>
+                            <input type="text" class="form-control" value="123 Rue de l'Éducation, Dakar">
+                        </div>
+                        <div class="form-group">
+                            <label>Téléphone</label>
+                            <input type="tel" class="form-control" value="+221 33 123 45 67">
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" class="form-control" value="contact@myschool221.sn">
+                        </div>
+                        <div class="form-group">
+                            <label>Site web</label>
+                            <input type="url" class="form-control" value="www.myschool221.sn">
+                        </div>
+                        <div class="form-group">
+                            <label>Devise</label>
+                            <select class="form-control">
+                                <option selected>FCFA</option>
+                                <option>EUR</option>
+                                <option>USD</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Année Scolaire</h3>
+                    <div class="settings-grid">
+                        <div class="form-group">
+                            <label>Année en cours</label>
+                            <input type="text" class="form-control" value="2023-2024">
+                        </div>
+                        <div class="form-group">
+                            <label>Date de début</label>
+                            <input type="date" class="form-control" value="2023-09-01">
+                        </div>
+                        <div class="form-group">
+                            <label>Date de fin</label>
+                            <input type="date" class="form-control" value="2024-06-30">
+                        </div>
+                        <div class="form-group">
+                            <label>Nombre de trimestres</label>
+                            <select class="form-control">
+                                <option>2</option>
+                                <option selected>3</option>
+                                <option>4</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Préférences d'Affichage</h3>
+                    <div class="settings-grid">
+                        <div class="form-group">
+                            <label>Langue par défaut</label>
+                            <select class="form-control">
+                                <option selected>Français</option>
+                                <option>Anglais</option>
+                                <option>Wolof</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Fuseau horaire</label>
+                            <select class="form-control">
+                                <option selected>GMT+0 (Dakar)</option>
+                                <option>GMT+1 (Paris)</option>
+                                <option>GMT-5 (New York)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Format de date</label>
+                            <select class="form-control">
+                                <option selected>DD/MM/YYYY</option>
+                                <option>MM/DD/YYYY</option>
+                                <option>YYYY-MM-DD</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" checked> Mode sombre disponible
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Management Tab -->
+            <div id="utilisateurs" class="tab-content">
+                <div class="settings-section">
+                    <div class="section-header">
+                        <h3>Gestion des Utilisateurs</h3>
+                        <button class="btn btn-primary" onclick="addUser()">
+                            <i class="fas fa-plus"></i> Ajouter utilisateur
+                        </button>
+                    </div>
+                    
+                    <div class="users-table">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Email</th>
+                                    <th>Rôle</th>
+                                    <th>Statut</th>
+                                    <th>Dernière connexion</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Admin Principal</td>
+                                    <td>admin@myschool221.sn</td>
+                                    <td><span class="role-badge admin">Super Admin</span></td>
+                                    <td><span class="status-badge active">Actif</span></td>
+                                    <td>Il y a 5 min</td>
+                                    <td>
+                                        <button class="btn btn-sm" onclick="editUser(1)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteUser(1)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Marie Directrice</td>
+                                    <td>marie@myschool221.sn</td>
+                                    <td><span class="role-badge director">Directeur</span></td>
+                                    <td><span class="status-badge active">Actif</span></td>
+                                    <td>Il y a 2h</td>
+                                    <td>
+                                        <button class="btn btn-sm" onclick="editUser(2)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteUser(2)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Jean Secrétaire</td>
+                                    <td>jean@myschool221.sn</td>
+                                    <td><span class="role-badge secretary">Secrétaire</span></td>
+                                    <td><span class="status-badge inactive">Inactif</span></td>
+                                    <td>Il y a 3 jours</td>
+                                    <td>
+                                        <button class="btn btn-sm" onclick="editUser(3)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteUser(3)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Rôles et Permissions</h3>
+                    <div class="roles-grid">
+                        <div class="role-card">
+                            <h4>Super Admin</h4>
+                            <p>Accès complet au système</p>
+                            <div class="permissions-list">
+                                <span class="permission-item">✓ Gestion utilisateurs</span>
+                                <span class="permission-item">✓ Configuration système</span>
+                                <span class="permission-item">✓ Tous les modules</span>
+                            </div>
+                        </div>
+                        <div class="role-card">
+                            <h4>Directeur</h4>
+                            <p>Gestion pédagogique et administrative</p>
+                            <div class="permissions-list">
+                                <span class="permission-item">✓ Gestion élèves/enseignants</span>
+                                <span class="permission-item">✓ Rapports</span>
+                                <span class="permission-item">✗ Configuration système</span>
+                            </div>
+                        </div>
+                        <div class="role-card">
+                            <h4>Secrétaire</h4>
+                            <p>Gestion administrative</p>
+                            <div class="permissions-list">
+                                <span class="permission-item">✓ Inscriptions</span>
+                                <span class="permission-item">✓ Communication</span>
+                                <span class="permission-item">✗ Finances</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Settings Tab -->
+            <div id="securite" class="tab-content">
+                <div class="settings-section">
+                    <h3>Politique de Mot de Passe</h3>
+                    <div class="settings-grid">
+                        <div class="form-group">
+                            <label>Longueur minimale</label>
+                            <input type="number" class="form-control" value="8" min="6" max="20">
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" checked> Majuscules requises
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" checked> Chiffres requis
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox"> Caractères spéciaux requis
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>Expiration (jours)</label>
+                            <input type="number" class="form-control" value="90">
+                        </div>
+                        <div class="form-group">
+                            <label>Historique des mots de passe</label>
+                            <input type="number" class="form-control" value="5">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Authentification à Deux Facteurs</h3>
+                    <div class="settings-grid">
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox"> Activer 2FA pour les admins
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox"> 2FA obligatoire pour les directeurs
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>Méthode 2FA</label>
+                            <select class="form-control">
+                                <option>SMS</option>
+                                <option selected>Application mobile</option>
+                                <option>Email</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Sécurité des Sessions</h3>
+                    <div class="settings-grid">
+                        <div class="form-group">
+                            <label>Durée de session (minutes)</label>
+                            <input type="number" class="form-control" value="120">
+                        </div>
+                        <div class="form-group">
+                            <label>Tentatives de connexion max</label>
+                            <input type="number" class="form-control" value="5">
+                        </div>
+                        <div class="form-group">
+                            <label>Blocage après échec (minutes)</label>
+                            <input type="number" class="form-control" value="15">
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" checked> Déconnexion automatique
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications Settings Tab -->
+            <div id="notifications" class="tab-content">
+                <div class="settings-section">
+                    <h3>Notifications Email</h3>
+                    <div class="notification-settings">
+                        <div class="notification-item">
+                            <div class="notification-info">
+                                <h4>Nouvelles inscriptions</h4>
+                                <p>Recevoir un email lors de nouvelles inscriptions</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="notification-item">
+                            <div class="notification-info">
+                                <h4>Paiements reçus</h4>
+                                <p>Notification lors de réception de paiements</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="notification-item">
+                            <div class="notification-info">
+                                <h4>Absences prolongées</h4>
+                                <p>Alerte pour les absences de plus de 3 jours</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Configuration SMS</h3>
+                    <div class="settings-grid">
+                        <div class="form-group">
+                            <label>Fournisseur SMS</label>
+                            <select class="form-control">
+                                <option>Orange Sénégal</option>
+                                <option selected>Tigo</option>
+                                <option>Expresso</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Nom d'expéditeur</label>
+                            <input type="text" class="form-control" value="MySchool221">
+                        </div>
+                        <div class="form-group">
+                            <label>Crédit SMS restant</label>
+                            <input type="text" class="form-control" value="1,250" readonly>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary">Recharger crédit SMS</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Backup Settings Tab -->
+            <div id="sauvegarde" class="tab-content">
+                <div class="settings-section">
+                    <h3>Sauvegarde Automatique</h3>
+                    <div class="settings-grid">
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" checked> Activer sauvegarde automatique
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>Fréquence</label>
+                            <select class="form-control">
+                                <option>Quotidienne</option>
+                                <option selected>Hebdomadaire</option>
+                                <option>Mensuelle</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Heure de sauvegarde</label>
+                            <input type="time" class="form-control" value="02:00">
+                        </div>
+                        <div class="form-group">
+                            <label>Nombre de sauvegardes à conserver</label>
+                            <input type="number" class="form-control" value="10">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Sauvegardes Récentes</h3>
+                    <div class="backup-list">
+                        <div class="backup-item">
+                            <div class="backup-info">
+                                <h4>Sauvegarde_2024-01-15_02-00.sql</h4>
+                                <p>Taille: 45.2 MB - Créée le 15/01/2024 à 02:00</p>
+                            </div>
+                            <div class="backup-actions">
+                                <button class="btn btn-sm btn-primary">
+                                    <i class="fas fa-download"></i> Télécharger
+                                </button>
+                                <button class="btn btn-sm btn-success">
+                                    <i class="fas fa-undo"></i> Restaurer
+                                </button>
+                                <button class="btn btn-sm btn-danger">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </button>
+                            </div>
+                        </div>
+                        <div class="backup-item">
+                            <div class="backup-info">
+                                <h4>Sauvegarde_2024-01-08_02-00.sql</h4>
+                                <p>Taille: 44.8 MB - Créée le 08/01/2024 à 02:00</p>
+                            </div>
+                            <div class="backup-actions">
+                                <button class="btn btn-sm btn-primary">
+                                    <i class="fas fa-download"></i> Télécharger
+                                </button>
+                                <button class="btn btn-sm btn-success">
+                                    <i class="fas fa-undo"></i> Restaurer
+                                </button>
+                                <button class="btn btn-sm btn-danger">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="backup-actions-section">
+                        <button class="btn btn-primary" onclick="createBackup()">
+                            <i class="fas fa-save"></i> Créer sauvegarde maintenant
+                        </button>
+                        <button class="btn btn-secondary" onclick="uploadBackup()">
+                            <i class="fas fa-upload"></i> Importer sauvegarde
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Settings Tab -->
+            <div id="systeme" class="tab-content">
+                <div class="settings-section">
+                    <h3>Informations Système</h3>
+                    <div class="system-info">
+                        <div class="info-item">
+                            <span class="info-label">Version MySchool 221:</span>
+                            <span class="info-value">v2.1.0</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Base de données:</span>
+                            <span class="info-value">MySQL 8.0.25</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Serveur web:</span>
+                            <span class="info-value">Apache 2.4.41</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">PHP:</span>
+                            <span class="info-value">8.1.2</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Espace disque utilisé:</span>
+                            <span class="info-value">2.3 GB / 50 GB</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Dernière mise à jour:</span>
+                            <span class="info-value">10/01/2024</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Maintenance Système</h3>
+                    <div class="maintenance-actions">
+                        <div class="maintenance-item">
+                            <div class="maintenance-info">
+                                <h4>Vider le cache</h4>
+                                <p>Supprime les fichiers temporaires et améliore les performances</p>
+                            </div>
+                            <button class="btn btn-warning" onclick="clearCache()">
+                                <i class="fas fa-broom"></i> Vider cache
+                            </button>
+                        </div>
+                        <div class="maintenance-item">
+                            <div class="maintenance-info">
+                                <h4>Optimiser la base de données</h4>
+                                <p>Optimise les tables pour améliorer les performances</p>
+                            </div>
+                            <button class="btn btn-info" onclick="optimizeDatabase()">
+                                <i class="fas fa-database"></i> Optimiser
+                            </button>
+                        </div>
+                        <div class="maintenance-item">
+                            <div class="maintenance-info">
+                                <h4>Vérifier les mises à jour</h4>
+                                <p>Recherche les nouvelles versions disponibles</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="checkUpdates()">
+                                <i class="fas fa-sync"></i> Vérifier
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Logs Système</h3>
+                    <div class="logs-container">
+                        <div class="logs-header">
+                            <h4>Dernières activités</h4>
+                            <button class="btn btn-sm" onclick="downloadLogs()">
+                                <i class="fas fa-download"></i> Télécharger logs
+                            </button>
+                        </div>
+                        <div class="logs-list">
+                            <div class="log-item info">
+                                <span class="log-time">15/01/2024 14:30</span>
+                                <span class="log-message">Connexion utilisateur: admin@myschool221.sn</span>
+                            </div>
+                            <div class="log-item success">
+                                <span class="log-time">15/01/2024 14:25</span>
+                                <span class="log-message">Sauvegarde automatique terminée avec succès</span>
+                            </div>
+                            <div class="log-item warning">
+                                <span class="log-time">15/01/2024 14:20</span>
+                                <span class="log-message">Tentative de connexion échouée: user@test.com</span>
+                            </div>
+                            <div class="log-item error">
+                                <span class="log-time">15/01/2024 14:15</span>
+                                <span class="log-message">Erreur lors de l'envoi d'email à parent@email.com</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="scripts.js"></script>
+    <script>
+        function showTab(tabName) {
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            tabBtns.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function saveSettings() {
+            alert('Paramètres sauvegardés avec succès!');
+        }
+
+        function resetSettings() {
+            if (confirm('Êtes-vous sûr de vouloir réinitialiser tous les paramètres?')) {
+                alert('Paramètres réinitialisés');
+            }
+        }
+
+        function addUser() {
+            alert('Ouverture du formulaire d\'ajout d\'utilisateur');
+        }
+
+        function editUser(userId) {
+            alert('Modification de l\'utilisateur ID: ' + userId);
+        }
+
+        function deleteUser(userId) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur?')) {
+                alert('Utilisateur supprimé');
+            }
+        }
+
+        function createBackup() {
+            alert('Création de sauvegarde en cours...');
+        }
+
+        function uploadBackup() {
+            alert('Sélectionnez un fichier de sauvegarde à importer');
+        }
+
+        function clearCache() {
+            if (confirm('Vider le cache du système?')) {
+                alert('Cache vidé avec succès');
+            }
+        }
+
+        function optimizeDatabase() {
+            if (confirm('Optimiser la base de données? Cette opération peut prendre quelques minutes.')) {
+                alert('Optimisation en cours...');
+            }
+        }
+
+        function checkUpdates() {
+            alert('Vérification des mises à jour...\nAucune mise à jour disponible.');
+        }
+
+        function downloadLogs() {
+            alert('Téléchargement des logs système...');
+        }
+    </script>
+</body>
+</html>

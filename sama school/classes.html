@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MySchool 221 - Gestion des Classes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-yellow: #F7B000;
+            --primary-blue: #407CEE;
+            --primary-black: #000000;
+        }
+        
+        .bg-primary-yellow { background-color: var(--primary-yellow); }
+        .bg-primary-blue { background-color: var(--primary-blue); }
+        .text-primary-yellow { color: var(--primary-yellow); }
+        .text-primary-blue { color: var(--primary-blue); }
+        .border-primary-yellow { border-color: var(--primary-yellow); }
+        .border-primary-blue { border-color: var(--primary-blue); }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sidebar {
+            transition: transform 0.3s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-2px);
+            transition: transform 0.2s ease;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .class-card {
+            transition: all 0.3s ease;
+        }
+
+        .class-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg border-b-4 border-primary-blue">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <button id="menu-toggle" class="md:hidden text-primary-blue">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-primary-blue rounded-lg flex items-center justify-center">
+                            <i class="fas fa-graduation-cap text-white text-lg"></i>
+                        </div>
+                        <h1 class="text-2xl font-bold text-primary-black">MySchool 221</h1>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button onclick="openModal('notificationModal')" class="relative p-2 text-primary-blue hover:bg-gray-100 rounded-lg">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">5</span>
+                    </button>
+                    
+                    <div class="flex items-center space-x-3">
+                        <img src="/placeholder.svg?height=40&width=40" alt="Admin" class="w-10 h-10 rounded-full border-2 border-primary-yellow">
+                        <div class="hidden md:block">
+                            <p class="text-sm font-medium text-primary-black">Admin Principal</p>
+                            <p class="text-xs text-gray-500">Super Administrateur</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar bg-white w-64 min-h-screen shadow-lg border-r-4 border-primary-yellow">
+            <div class="p-6">
+                <div class="space-y-2">
+                    <a href="dashboard.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-tachometer-alt text-primary-blue"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    
+                    <button onclick="openModal('schoolModal')" class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-school text-primary-blue"></i>
+                        <span>Gestion des Écoles</span>
+                    </button>
+                    
+                    <button onclick="openModal('teacherModal')" class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-chalkboard-teacher text-primary-blue"></i>
+                        <span>Enseignants & Employés</span>
+                    </button>
+                    
+                    <a href="eleves.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-user-graduate text-primary-blue"></i>
+                        <span>Élèves</span>
+                    </a>
+                    
+                    <a href="classes.html" class="flex items-center space-x-3 p-3 rounded-lg bg-primary-blue text-white">
+                        <i class="fas fa-users"></i>
+                        <span>Classes</span>
+                    </a>
+                    
+                    <a href="finances.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-money-bill-wave text-primary-blue"></i>
+                        <span>Finances</span>
+                    </a>
+                    
+                    <a href="emplois-temps.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-calendar-alt text-primary-blue"></i>
+                        <span>Emplois du Temps</span>
+                    </a>
+                    
+                    <a href="notes.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-file-alt text-primary-blue"></i>
+                        <span>Notes & Bulletins</span>
+                    </a>
+                    
+                    <a href="presences.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-clock text-primary-blue"></i>
+                        <span>Présences</span>
+                    </a>
+                    
+                    <a href="communication.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-comments text-primary-blue"></i>
+                        <span>Communication</span>
+                    </a>
+                    
+                    <a href="rapports.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-chart-bar text-primary-blue"></i>
+                        <span>Rapports</span>
+                    </a>
+                    
+                    <a href="parametres.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-cog text-primary-blue"></i>
+                        <span>Paramètres</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenu principal - Gestion des Classes -->
+        <div class="flex-1 p-6">
+            <!-- En-tête -->
+            <div class="mb-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold text-primary-black">Gestion des Classes</h1>
+                        <p class="text-gray-600 mt-2">Organisez et gérez toutes les classes de vos écoles</p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button onclick="openModal('addClassModal')" class="bg-primary-yellow text-white px-6 py-3 rounded-lg hover:opacity-90 flex items-center space-x-2">
+                            <i class="fas fa-plus"></i>
+                            <span>Créer une Classe</span>
+                        </button>
+                        <button onclick="openModal('assignTeacherModal')" class="bg-primary-blue text-white px-6 py-3 rounded-lg hover:opacity-90 flex items-center space-x-2">
+                            <i class="fas fa-user-tie"></i>
+                            <span>Assigner Enseignant</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistiques des classes -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-primary-blue">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Total Classes</p>
+                            <p class="text-3xl font-bold text-primary-blue">106</p>
+                            <p class="text-sm text-green-600">Toutes écoles</p>
+                        </div>
+                        <i class="fas fa-users text-primary-blue text-2xl"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-primary-yellow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Moyenne par Classe</p>
+                            <p class="text-3xl font-bold text-primary-yellow">27</p>
+                            <p class="text-sm text-yellow-600">Élèves</p>
+                        </div>
+                        <i class="fas fa-user-graduate text-primary-yellow text-2xl"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Classes Complètes</p>
+                            <p class="text-3xl font-bold text-green-500">89</p>
+                            <p class="text-sm text-green-600">84% du total</p>
+                        </div>
+                        <i class="fas fa-check-circle text-green-500 text-2xl"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-red-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Classes Surchargées</p>
+                            <p class="text-3xl font-bold text-red-500">8</p>
+                            <p class="text-sm text-red-600">+35 élèves</p>
+                        </div>
+                        <i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtres -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <input type="text" placeholder="Rechercher une classe..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                    </div>
+                    <select class="px-4 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                        <option>Toutes les écoles</option>
+                        <option>École Les Palmiers</option>
+                        <option>Collège Excellence</option>
+                        <option>Lycée Moderne</option>
+                        <option>École Bilingue Avenir</option>
+                    </select>
+                    <select class="px-4 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                        <option>Tous les niveaux</option>
+                        <option>Primaire</option>
+                        <option>Collège</option>
+                        <option>Lycée</option>
+                    </select>
+                    <button class="bg-primary-blue text-white px-4 py-2 rounded-lg hover:opacity-90">
+                        <i class="fas fa-search mr-2"></i>Filtrer
+                    </button>
+                </div>
+            </div>
+
+            <!-- Graphique de répartition -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-primary-black mb-4">Répartition par École</h3>
+                    <div class="chart-container">
+                        <canvas id="schoolClassChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-primary-black mb-4">Effectifs par Niveau</h3>
+                    <div class="chart-container">
+                        <canvas id="levelEffectiveChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Liste des classes par école -->
+            <div class="space-y-8">
+                <!-- École Les Palmiers -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="bg-primary-blue text-white p-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="text-xl font-bold">École Primaire Les Palmiers</h3>
+                                <p class="text-blue-100">Dakar - 28 classes</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-2xl font-bold">856</p>
+                                <p class="text-blue-100">élèves</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            <!-- Classe CP A -->
+                            <div class="class-card border border-gray-200 rounded-lg p-4 hover:shadow-lg">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h4 class="font-semibold text-primary-black">CP A</h4>
+                                        <p class="text-sm text-gray-600">Salle 101</p>
+                                    </div>
+                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Complet</span>
+                                </div>
+                                
+                                <div class="space-y-2 mb-4">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Élèves:</span>
+                                        <span class="font-medium">32/35</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Enseignant:</span>
+                                        <span class="font-medium">Mme Diop</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Moyenne:</span>
+                                        <span class="font-medium text-green-600">15.2/20</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex space-x-2">
+                                    <button onclick="showClassDetails('CP_A_PALMIERS')" class="flex-1 bg-primary-blue text-white py-2 px-3 rounded text-xs hover:opacity-90">
+                                        Détails
+                                    </button>
+                                    <button onclick="editClass('CP_A_PALMIERS')" class="flex-1 bg-primary-yellow text-white py-2 px-3 rounded text-xs hover:opacity-90">
+                                        Modifier
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Classe CP B -->
+                            <div class="class-card border border-gray-200 rounded-lg p-4 hover:shadow-lg">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h4 class="font-semibold text-primary-black">CP B</h4>
+                                        <p class="text-sm text-gray-600">Salle 102</p>
+                                    </div>
+                                    <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">Places libres</span>
+                                </div>
+                                
+                                <div class="space-y-2 mb-4">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Élèves:</span>
+                                        <span class="font-medium">28/35</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Enseignant:</span>
+                                        <span class="font-medium">M. Sarr</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Moyenne:</span>
+                                        <span class="font-medium text-green-600">14.8/20</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex space-x-2">
+                                    <button onclick="showClassDetails('CP_B_PALMIERS')" class="flex-1 bg-primary-blue text-white py-2 px-3 rounded text-xs hover:opacity-90">
+                                        Détails
+                                    </button>
+                                    <button onclick="editClass('CP_B_PALMIERS')" class="flex-1 bg-primary-yellow text-white py-2 px-3 rounded text-xs hover:opacity-90">
+                                        Modifier
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Classe CE1 A -->
+                            <div class="class-card border border-gray-200 rounded-lg p-4 hover:shadow-lg">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h4 class="font-semibold text-primary-black">CE1 A</h4>
+                                        <p class="text-sm text-gray-600">Salle 201</p>
+                                    </div>
+                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Complet</span>
+                                </div>
+                                
+                                <div class="space-y-2 mb-4">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Élèves:</span>
+                                        <span class="font-medium">35/35</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Enseignant:</span>
+                                        <span class="font-medium">Mme Kane</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Moyenne:</span>
+                                        <span class="font-medium text-green-600">16.1/20</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex space-x-2">
+                                    <button onclick="showClassDetails('CE1_A_PALMIERS')" class="flex-1 bg-primary-blue text-white py-2 px-3 rounded text-xs hover:opacity-90">
+                                        Détails
+                                    </button>
+                                    <button onclick="editClass('CE1_A_PALMIERS')" class="flex-1 bg-primary-yellow text-white py-2 px-3 rounded text-xs hover:opacity-90">
+                                        Modifier
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Classe CM2 A - Surchargée -->
+                            <div class="class-card border border-red-200 rounded-lg p-4 hover:shadow-lg bg-red-50">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h4 class="font-semibold text-primary-black">CM2 A</h4>
+                                        <p class="text-sm text-gray-600">Salle 301</p>
+                                    </div>
+                                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">Surchargée</span>
+                                </div>
+                                
+                                <div class="space-y-2 mb-4">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Élèves:</span>
+                                        <span class="font-medium text-red-600">45/35</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Enseignant:</span>
+                                        <span class="font-medium">Mme Fatou</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Moyenne:</span>
+                                        <span class="font-medium text-yellow-600">13.8/20</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex space-x-2">
+                                    <button onclick="showClassDetails('CM2_A_PALMIERS')" class="flex-1 bg-primary-blue text-white py-2 px-3 rounded text-xs hover:opacity-90">
+                                        Détails
+                                    </button>
+                                    <button onclick="editClass('CM2_A_PALMIERS')" class="flex-1 bg-red-500 text-white py-2 px-3 rounded text-xs hover:opacity-90">
+                                        Urgent
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 text-center">
+                            <button onclick="showAllClasses('PALMIERS')" class="text-primary-blue hover:underline">
+                                Voir toutes les classes (28) <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Collège Excellence -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="bg-primary-yellow text-white p-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="text-xl font-bold">Collège Excellence</h3>
+                                <p class="text-yellow-100">Thiès - 22 classes</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-2xl font-bold">642</p>
+                                <p class="text-yellow-100">élèves</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            <!-- Classe 6ème A -->
+                            <div class="class-card border border-gray-200 rounded-lg p-4 hover:shadow-lg">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h4 class="font-semibold text-primary-black">6ème A</h4>
+                                        <p class="text-sm text-gray-600">Salle 401</p>
+                                    </div>
+                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Complet</span>
+                                </div>
+                                
+                                <div class="space-y-2 mb-4">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Élèves:</span>
+                                        <span class="font-medium">30/30</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Prof Principal:</span>
+                                        <span class="font-medium">M. Sy</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Moyenne:</span>
+                                        <span class="font-medium text-green-600">14.5/20</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex space-x-2">
+                                    <button onclick="showClassDetails('6A_EXCELLENCE')" class="flex-1 bg-primary-blue text-white py-2 px-3 rounded text-xs hover:opacity-90">
+                                        Détails
+                                    </button>
+                                    <button onclick="editClass('6A_EXCELLENCE')" class="flex-1 bg-primary-yellow text-white py-2 px-3 rounded text-xs hover:opacity-90">
+                                        Modifier
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Classe 3ème B -->
+                            <div class="class-card border border-gray-200 rounded-lg p-4 hover:shadow-lg">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h4 class="font-semibold text-primary-black">3ème B</h4>
+                                        <p class="text-sm text-gray-600">Salle 501</p>
+                                    </div>
+                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">Brevet</span>
+                                </div>
+                                
+                                <div class="space-y-2 mb-4">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Élèves:</span>
+                                        <span class="font-medium">28/30</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Prof Principal:</span>
+                                        <span class="font-medium">Mme Ndiaye</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Moyenne:</span>
+                                        <span class="font-medium text-green-600">15.8/20</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex space-x-2">
+                                    <button onclick="showClassDetails('3B_EXCELLENCE')" class="flex-1 bg-primary-blue text-white py-2 px-3 rounded text-xs hover:opacity-90">
+                                        Détails
+                                    </button>
+                                    <button onclick="editClass('3B_EXCELLENCE')" class="flex-1 bg-primary-yellow text-white py-2 px-3 rounded text-xs hover:opacity-90">
+                                        Modifier
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 text-center">
+                            <button onclick="showAllClasses('EXCELLENCE')" class="text-primary-blue hover:underline">
+                                Voir toutes les classes (22) <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Créer Classe -->
+    <div id="addClassModal" class="modal">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-primary-black">Créer une Nouvelle Classe</h2>
+                    <button onclick="closeModal('addClassModal')" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <form class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nom de la classe</label>
+                            <input type="text" placeholder="Ex: CP A, 6ème B..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">École</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                                <option>École Les Palmiers</option>
+                                <option>Collège Excellence</option>
+                                <option>Lycée Moderne</option>
+                                <option>École Bilingue Avenir</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Niveau</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                                <option>CP</option>
+                                <option>CE1</option>
+                                <option>CE2</option>
+                                <option>CM1</option>
+                                <option>CM2</option>
+                                <option>6ème</option>
+                                <option>5ème</option>
+                                <option>4ème</option>
+                                <option>3ème</option>
+                                <option>2nde</option>
+                                <option>1ère</option>
+                                <option>Terminale</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Salle</label>
+                            <input type="text" placeholder="Ex: Salle 101" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Capacité maximale</label>
+                            <input type="number" placeholder="35" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Professeur principal</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                                <option>Sélectionner un enseignant</option>
+                                <option>Mme Fatou Diop</option>
+                                <option>M. Mamadou Sy</option>
+                                <option>Mme Aminata Kane</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-4 pt-6">
+                        <button type="button" onclick="closeModal('addClassModal')" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                            Annuler
+                        </button>
+                        <button type="submit" class="px-6 py-2 bg-primary-yellow text-white rounded-lg hover:opacity-90">
+                            Créer la Classe
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fonctions pour les modals
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Fermer modal en cliquant à l'extérieur
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+            }
+        });
+
+        // Menu mobile
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+
+        // Graphique de répartition par école
+        const schoolClassCtx = document.getElementById('schoolClassChart').getContext('2d');
+        new Chart(schoolClassCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['École Les Palmiers', 'Collège Excellence', 'Lycée Moderne', 'École Bilingue'],
+                datasets: [{
+                    data: [28, 22, 32, 24],
+                    backgroundColor: ['#407CEE', '#F7B000', '#10B981', '#8B5CF6']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        // Graphique des effectifs par niveau
+        const levelEffectiveCtx = document.getElementById('levelEffectiveChart').getContext('2d');
+        new Chart(levelEffectiveCtx, {
+            type: 'bar',
+            data: {
+                labels: ['CP', 'CE1', 'CE2', 'CM1', 'CM2', '6ème', '5ème', '4ème', '3ème', '2nde', '1ère', 'Tle'],
+                datasets: [{
+                    label: 'Nombre d\'élèves',
+                    data: [245, 268, 289, 312, 298, 187, 165, 148, 142, 89, 76, 68],
+                    backgroundColor: '#407CEE'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // Fonctions pour les actions
+        function showClassDetails(classId) {
+            console.log('Affichage des détails de la classe:', classId);
+        }
+
+        function editClass(classId) {
+            console.log('Modification de la classe:', classId);
+        }
+
+        function showAllClasses(schoolId) {
+            console.log('Affichage de toutes les classes de l\'école:', schoolId);
+        }
+
+        // Gestion responsive de la sidebar
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 768) {
+                document.getElementById('sidebar').classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

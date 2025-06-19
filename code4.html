@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MySchool 221 - Dashboard Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .custom-yellow { color: #F7B000; }
+        .custom-blue { color: #407CEE; }
+        .bg-custom-yellow { background-color: #F7B000; }
+        .bg-custom-blue { background-color: #407CEE; }
+        .border-custom-yellow { border-color: #F7B000; }
+        .border-custom-blue { border-color: #407CEE; }
+        .hover-yellow:hover { background-color: #F7B000; color: white; }
+        .hover-blue:hover { background-color: #407CEE; color: white; }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sidebar-item:hover {
+            background-color: #407CEE;
+            color: white;
+        }
+        
+        .stat-card {
+            transition: transform 0.2s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Sidebar -->
+    <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg">
+        <div class="flex items-center justify-center h-16 bg-custom-blue">
+            <h1 class="text-xl font-bold text-white">MySchool 221</h1>
+        </div>
+        
+        <nav class="mt-8">
+            <div class="px-4 space-y-2">
+                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg">
+                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    <span>Tableau de Bord</span>
+                </a>
+                
+                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg" onclick="openModal('schoolsModal')">
+                    <i class="fas fa-school mr-3"></i>
+                    <span>Gestion des Écoles</span>
+                </a>
+                
+                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg" onclick="openModal('academicModal')">
+                    <i class="fas fa-graduation-cap mr-3"></i>
+                    <span>Gestion Académique</span>
+                </a>
+                
+                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg" onclick="openModal('attendanceModal')">
+                    <i class="fas fa-calendar-check mr-3"></i>
+                    <span>Présences</span>
+                </a>
+                
+                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg" onclick="openModal('scheduleModal')">
+                    <i class="fas fa-clock mr-3"></i>
+                    <span>Emploi du Temps</span>
+                </a>
+                
+                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg" onclick="openModal('teachersModal')">
+                    <i class="fas fa-chalkboard-teacher mr-3"></i>
+                    <span>Enseignants</span>
+                </a>
+                
+                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg" onclick="openModal('studentsModal')">
+                    <i class="fas fa-user-graduate mr-3"></i>
+                    <span>Élèves</span>
+                </a>
+                
+                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg" onclick="openModal('paymentsModal')">
+                    <i class="fas fa-credit-card mr-3"></i>
+                    <span>Paiements</span>
+                </a>
+                
+                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg" onclick="openModal('communicationModal')">
+                    <i class="fas fa-comments mr-3"></i>
+                    <span>Communication</span>
+                </a>
+                
+                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg" onclick="openModal('reportsModal')">
+                    <i class="fas fa-chart-bar mr-3"></i>
+                    <span>Rapports</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-64">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b">
+            <div class="flex items-center justify-between px-6 py-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Dashboard Administrateur</h2>
+                    <p class="text-gray-600">Vue d'ensemble de vos établissements</p>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <select class="bg-custom-yellow text-white px-4 py-2 rounded-lg font-medium">
+                            <option>Toutes les écoles</option>
+                            <option>École Primaire Dakar</option>
+                            <option>Collège Thiès</option>
+                            <option>Lycée Mbour</option>
+                        </select>
+                    </div>
+                    
+                    <button class="relative p-2 text-gray-600 hover:text-custom-blue">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+                    </button>
+                    
+                    <div class="flex items-center space-x-2">
+                        <img src="/placeholder.svg?height=40&width=40" alt="Admin" class="w-10 h-10 rounded-full">
+                        <div>
+                            <p class="font-medium text-gray-800">Admin Principal</p>
+                            <p class="text-sm text-gray-600">Administrateur</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <main class="p-6">
+            <!-- Statistics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="stat-card bg-white p-6 rounded-lg shadow-sm border-l-4 border-custom-blue">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Total Écoles</p>
+                            <p class="text-3xl font-bold custom-blue">12</p>
+                        </div>
+                        <div class="bg-custom-blue bg-opacity-10 p-3 rounded-full">
+                            <i class="fas fa-school text-2xl custom-blue"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <span class="text-green-500 text-sm font-medium">+2 ce mois</span>
+                    </div>
+                </div>
+
+                <div class="stat-card bg-white p-6 rounded-lg shadow-sm border-l-4 border-custom-yellow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Total Élèves</p>
+                            <p class="text-3xl font-bold custom-yellow">2,847</p>
+                        </div>
+                        <div class="bg-custom-yellow bg-opacity-10 p-3 rounded-full">
+                            <i class="fas fa-user-graduate text-2xl custom-yellow"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <span class="text-green-500 text-sm font-medium">+156 ce mois</span>
+                    </div>
+                </div>
+
+                <div class="stat-card bg-white p-6 rounded-lg shadow-sm border-l-4 border-custom-blue">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Enseignants</p>
+                            <p class="text-3xl font-bold custom-blue">184</p>
+                        </div>
+                        <div class="bg-custom-blue bg-opacity-10 p-3 rounded-full">
+                            <i class="fas fa-chalkboard-teacher text-2xl custom-blue"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <span class="text-green-500 text-sm font-medium">+8 ce mois</span>
+                    </div>
+                </div>
+
+                <div class="stat-card bg-white p-6 rounded-lg shadow-sm border-l-4 border-custom-yellow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Revenus Mensuels</p>
+                            <p class="text-3xl font-bold custom-yellow">45.2M</p>
+                        </div>
+                        <div class="bg-custom-yellow bg-opacity-10 p-3 rounded-full">
+                            <i class="fas fa-money-bill-wave text-2xl custom-yellow"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <span class="text-green-500 text-sm font-medium">+12% ce mois</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts and Analytics -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Évolution des Inscriptions</h3>
+                    <canvas id="enrollmentChart" width="400" height="200"></canvas>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Répartition par École</h3>
+                    <canvas id="schoolDistributionChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Actions Rapides</h3>
+                    <div class="space-y-3">
+                        <button onclick="openModal('addSchoolModal')" class="w-full flex items-center justify-between p-3 border border-custom-blue rounded-lg hover-blue transition-colors">
+                            <span class="flex items-center">
+                                <i class="fas fa-plus mr-2"></i>
+                                Ajouter une École
+                            </span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                        
+                        <button onclick="openModal('addTeacherModal')" class="w-full flex items-center justify-between p-3 border border-custom-yellow rounded-lg hover-yellow transition-colors">
+                            <span class="flex items-center">
+                                <i class="fas fa-user-plus mr-2"></i>
+                                Ajouter un Enseignant
+                            </span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                        
+                        <button onclick="openModal('bulkImportModal')" class="w-full flex items-center justify-between p-3 border border-custom-blue rounded-lg hover-blue transition-colors">
+                            <span class="flex items-center">
+                                <i class="fas fa-upload mr-2"></i>
+                                Import en Masse
+                            </span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Alertes Récentes</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center p-3 bg-red-50 border-l-4 border-red-400 rounded">
+                            <i class="fas fa-exclamation-triangle text-red-400 mr-2"></i>
+                            <div>
+                                <p class="text-sm font-medium text-red-800">Paiement en retard</p>
+                                <p class="text-xs text-red-600">École Primaire Dakar</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded">
+                            <i class="fas fa-clock text-yellow-400 mr-2"></i>
+                            <div>
+                                <p class="text-sm font-medium text-yellow-800">Absence prolongée</p>
+                                <p class="text-xs text-yellow-600">15 élèves concernés</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center p-3 bg-blue-50 border-l-4 border-blue-400 rounded">
+                            <i class="fas fa-info-circle text-blue-400 mr-2"></i>
+                            <div>
+                                <p class="text-sm font-medium text-blue-800">Nouvelle inscription</p>
+                                <p class="text-xs text-blue-600">Collège Thiès</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Performance Globale</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Taux de Présence</span>
+                                <span class="font-medium">94%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-custom-blue h-2 rounded-full" style="width: 94%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Paiements à Jour</span>
+                                <span class="font-medium">87%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-custom-yellow h-2 rounded-full" style="width: 87%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Satisfaction Parents</span>
+                                <span class="font-medium">91%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 91%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Schools Overview -->
+            <div class="bg-white rounded-lg shadow-sm">
+                <div class="p-6 border-b">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-800">Vue d'ensemble des Écoles</h3>
+                        <button onclick="openModal('schoolsModal')" class="bg-custom-blue text-white px-4 py-2 rounded-lg hover:opacity-90">
+                            Voir Tout
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">École</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Élèves</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Enseignants</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Présence</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Revenus</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-custom-blue rounded-full flex items-center justify-center text-white font-bold mr-3">
+                                            EP
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">École Primaire Dakar</p>
+                                            <p class="text-sm text-gray-500">Dakar, Sénégal</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-900">456</td>
+                                <td class="px-6 py-4 text-sm text-gray-900">28</td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        95%
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-900">8.2M FCFA</td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Actif
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <button onclick="openModal('schoolDetailsModal')" class="text-custom-blue hover:text-blue-700 mr-2">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button onclick="openModal('editSchoolModal')" class="text-custom-yellow hover:text-yellow-700">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-custom-yellow rounded-full flex items-center justify-center text-white font-bold mr-3">
+                                            CT
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">Collège Thiès</p>
+                                            <p class="text-sm text-gray-500">Thiès, Sénégal</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-900">623</td>
+                                <td class="px-6 py-4 text-sm text-gray-900">42</td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                        89%
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-900">12.5M FCFA</td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Actif
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <button onclick="openModal('schoolDetailsModal')" class="text-custom-blue hover:text-blue-700 mr-2">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button onclick="openModal('editSchoolModal')" class="text-custom-yellow hover:text-yellow-700">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-custom-blue rounded-full flex items-center justify-center text-white font-bold mr-3">
+                                            LM
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">Lycée Mbour</p>
+                                            <p class="text-sm text-gray-500">Mbour, Sénégal</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-900">789</td>
+                                <td class="px-6 py-4 text-sm text-gray-900">56</td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        97%
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-900">15.8M FCFA</td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Actif
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <button onclick="openModal('schoolDetailsModal')" class="text-custom-blue hover:text-blue-700 mr-2">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button onclick="openModal('editSchoolModal')" class="text-custom-yellow hover:text-yellow-700">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    
+    <!-- Schools Management Modal -->
+    <div id="schoolsModal" class="modal">
+        <div class="bg-white rounded-lg shadow-xl max-w-6xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between p-6 border-b">
+                <h3 class="text-xl font-semibold text-gray-800">Gestion des Écoles</h3>
+                <button onclick="closeModal('schoolsModal')" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex space-x-4">
+                        <input type="text" placeholder="Rechercher une école..." class="px-4 py-2 border rounded-lg w-64">
+                        <select class="px-4 py-2 border rounded-lg">
+                            <option>Toutes les régions</option>
+                            <option>Dakar</option>
+                            <option>Thiès</option>
+                            <option>Mbour</option>
+                        </select>
+                    </div>
+                    <button onclick="openModal('addSchoolModal')" class="bg-custom-blue text-white px-4 py-2 rounded-lg">
+                        <i class="fas fa-plus mr-2"></i>Ajouter École
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="font-semibold text-gray-800">École Primaire Dakar</h4>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Actif</span>
+                        </div>
+                        <div class="space-y-2 text-sm text-gray-600">
+                            <p><i class="fas fa-map-marker-alt mr-2"></i>Dakar, Sénégal</p>
+                            <p><i class="fas fa-users mr-2"></i>456 élèves</p>
+                            <p><i class="fas fa-chalkboard-teacher mr-2"></i>28 enseignants</p>
+                            <p><i class="fas fa-money-bill mr-2"></i>8.2M FCFA/mois</p>
+                        </div>
+                        <div class="flex justify-between mt-4">
+                            <button class="text-custom-blue hover:underline">Voir détails</button>
+                            <button class="text-custom-yellow hover:underline">Modifier</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Repeat for other schools -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Academic Management Modal -->
+    <div id="academicModal" class="modal">
+        <div class="bg-white rounded-lg shadow-xl max-w-5xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between p-6 border-b">
+                <h3 class="text-xl font-semibold text-gray-800">Gestion Académique</h3>
+                <button onclick="closeModal('academicModal')" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-blue-50 p-6 rounded-lg border border-custom-blue">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="font-semibold text-gray-800">Notes et Bulletins</h4>
+                            <i class="fas fa-clipboard-list text-2xl custom-blue"></i>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">Gestion des notes, calcul des moyennes et génération des bulletins</p>
+                        <div class="space-y-2">
+                            <button class="w-full bg-custom-blue text-white py-2 rounded hover:opacity-90">Saisir Notes</button>
+                            <button class="w-full border border-custom-blue text-custom-blue py-2 rounded hover-blue">Générer Bulletins</button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-6 rounded-lg border border-custom-yellow">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="font-semibold text-gray-800">Évaluations</h4>
+                            <i class="fas fa-tasks text-2xl custom-yellow"></i>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">Planification et suivi des évaluations</p>
+                        <div class="space-y-2">
+                            <button class="w-full bg-custom-yellow text-white py-2 rounded hover:opacity-90">Planifier Évaluation</button>
+                            <button class="w-full border border-custom-yellow text-custom-yellow py-2 rounded hover-yellow">Voir Calendrier</button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 p-6 rounded-lg border border-custom-blue">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="font-semibold text-gray-800">Statistiques</h4>
+                            <i class="fas fa-chart-line text-2xl custom-blue"></i>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">Analyses et comparaisons des performances</p>
+                        <div class="space-y-2">
+                            <button class="w-full bg-custom-blue text-white py-2 rounded hover:opacity-90">Voir Statistiques</button>
+                            <button class="w-full border border-custom-blue text-custom-blue py-2 rounded hover-blue">Exporter Données</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">Dernières Activités</h4>
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between py-2 border-b">
+                                <span class="text-sm">Notes de Mathématiques - 6ème A</span>
+                                <span class="text-xs text-gray-500">Il y a 2h</span>
+                            </div>
+                            <div class="flex items-center justify-between py-2 border-b">
+                                <span class="text-sm">Bulletin généré - Trimestre 1</span>
+                                <span class="text-xs text-gray-500">Il y a 1 jour</span>
+                            </div>
+                            <div class="flex items-center justify-between py-2">
+                                <span class="text-sm">Évaluation programmée - Français</span>
+                                <span class="text-xs text-gray-500">Il y a 3 jours</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teachers Management Modal -->
+    <div id="teachersModal" class="modal">
+        <div class="bg-white rounded-lg shadow-xl max-w-6xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between p-6 border-b">
+                <h3 class="text-xl font-semibold text-gray-800">Gestion des Enseignants</h3>
+                <button onclick="closeModal('teachersModal')" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex space-x-4">
+                        <input type="text" placeholder="Rechercher un enseignant..." class="px-4 py-2 border rounded-lg w-64">
+                        <select class="px-4 py-2 border rounded-lg">
+                            <option>Toutes les matières</option>
+                            <option>Mathématiques</option>
+                            <option>Français</option>
+                            <option>Sciences</option>
+                        </select>
+                    </div>
+                    <button onclick="openModal('addTeacherModal')" class="bg-custom-blue text-white px-4 py-2 rounded-lg">
+                        <i class="fas fa-plus mr-2"></i>Ajouter Enseignant
+                    </button>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Enseignant</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">École</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Matières</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Classes</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center">
+                                        <img src="/placeholder.svg?height=40&width=40" alt="Teacher" class="w-10 h-10 rounded-full mr-3">
+                                        <div>
+                                            <p class="font-medium text-gray-900">Mme Fatou Diop</p>
+                                            <p class="text-sm text-gray-500">fatou.diop@myschool.sn</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-900">École Primaire Dakar</td>
+                                <td class="px-6 py-4 text-sm text-gray-900">Mathématiques, Sciences</td>
+                                <td class="px-6 py-4 text-sm text-gray-900">CM1, CM2</td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Actif
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <button class="text-custom-blue hover:text-blue-700 mr-2">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="text-custom-yellow hover:text-yellow-700 mr-2">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="text-red-500 hover:text-red-700">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <!-- More teacher rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add more modals for other functionalities -->
+    
+    <!-- Add School Modal -->
+    <div id="addSchoolModal" class="modal">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4">
+            <div class="flex items-center justify-between p-6 border-b">
+                <h3 class="text-xl font-semibold text-gray-800">Ajouter une Nouvelle École</h3>
+                <button onclick="closeModal('addSchoolModal')" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <form class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nom de l'École</label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-blue">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Type d'École</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-blue">
+                                <option>École Primaire</option>
+                                <option>Collège</option>
+                                <option>Lycée</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Adresse</label>
+                        <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-blue">
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Ville</label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-blue">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
+                            <input type="tel" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-blue">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-blue">
+                    </div>
+                    
+                    <div class="flex justify-end space-x-4 pt-4">
+                        <button type="button" onclick="closeModal('addSchoolModal')" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                            Annuler
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-custom-blue text-white rounded-lg hover:opacity-90">
+                            Ajouter École
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional modals would be added here for other functionalities -->
+
+    <script>
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+            }
+        }
+
+        // Initialize charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Enrollment Chart
+            const enrollmentCtx = document.getElementById('enrollmentChart').getContext('2d');
+            new Chart(enrollmentCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun'],
+                    datasets: [{
+                        label: 'Nouvelles Inscriptions',
+                        data: [65, 78, 90, 81, 96, 105],
+                        borderColor: '#407CEE',
+                        backgroundColor: 'rgba(64, 124, 238, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // School Distribution Chart
+            const distributionCtx = document.getElementById('schoolDistributionChart').getContext('2d');
+            new Chart(distributionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Dakar', 'Thiès', 'Mbour', 'Autres'],
+                    datasets: [{
+                        data: [45, 25, 20, 10],
+                        backgroundColor: ['#407CEE', '#F7B000', '#407CEE', '#F7B000'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MySchool 221 - Dashboard Principal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Navigation principale -->
+    <nav class="bg-white shadow-lg border-b-4 border-primary-blue">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <button id="menu-toggle" class="md:hidden text-primary-blue">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-primary-blue rounded-lg flex items-center justify-center">
+                            <i class="fas fa-graduation-cap text-white text-lg"></i>
+                        </div>
+                        <h1 class="text-2xl font-bold text-primary-black">MySchool 221</h1>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button onclick="showNotifications()" class="relative p-2 text-primary-blue hover:bg-gray-100 rounded-lg">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">5</span>
+                    </button>
+                    
+                    <div class="flex items-center space-x-3">
+                        <img src="/placeholder.svg?height=40&width=40" alt="Admin" class="w-10 h-10 rounded-full border-2 border-primary-yellow">
+                        <div class="hidden md:block">
+                            <p class="text-sm font-medium text-primary-black">Admin Principal</p>
+                            <p class="text-xs text-gray-500">Super Administrateur</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar bg-white w-64 min-h-screen shadow-lg border-r-4 border-primary-yellow">
+            <div class="p-6">
+                <div class="space-y-2">
+                    <a href="index.html" class="flex items-center space-x-3 p-3 rounded-lg bg-primary-blue text-white">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    
+                    <a href="ecoles.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-school text-primary-blue"></i>
+                        <span>Gestion des Écoles</span>
+                    </a>
+                    
+                    <a href="enseignants.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-chalkboard-teacher text-primary-blue"></i>
+                        <span>Enseignants & Employés</span>
+                    </a>
+                    
+                    <a href="eleves.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-user-graduate text-primary-blue"></i>
+                        <span>Élèves</span>
+                    </a>
+                    
+                    <a href="classes.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-users text-primary-blue"></i>
+                        <span>Classes</span>
+                    </a>
+                    
+                    <a href="finances.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-money-bill-wave text-primary-blue"></i>
+                        <span>Finances</span>
+                    </a>
+                    
+                    <a href="emplois-temps.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-calendar-alt text-primary-blue"></i>
+                        <span>Emplois du Temps</span>
+                    </a>
+                    
+                    <a href="notes.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-file-alt text-primary-blue"></i>
+                        <span>Notes & Bulletins</span>
+                    </a>
+                    
+                    <a href="presences.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-clock text-primary-blue"></i>
+                        <span>Présences</span>
+                    </a>
+                    
+                    <a href="communication.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-comments text-primary-blue"></i>
+                        <span>Communication</span>
+                    </a>
+                    
+                    <a href="rapports.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-chart-bar text-primary-blue"></i>
+                        <span>Rapports</span>
+                    </a>
+                    
+                    <a href="parametres.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-cog text-primary-blue"></i>
+                        <span>Paramètres</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="flex-1 p-6">
+            <!-- Sélecteur d'école -->
+            <div class="mb-6 bg-white rounded-lg shadow-md p-4 border-l-4 border-primary-yellow">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-semibold text-primary-black">École Sélectionnée</h2>
+                        <select id="schoolSelector" class="mt-2 p-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                            <option value="all">🌍 Vue Globale - Toutes les Écoles</option>
+                            <option value="school1">🏫 École Primaire Les Palmiers - Dakar</option>
+                            <option value="school2">🏫 Collège Excellence - Thiès</option>
+                            <option value="school3">🏫 Lycée Moderne - Mbour</option>
+                            <option value="school4">🏫 École Bilingue Avenir - Dakar</option>
+                        </select>
+                    </div>
+                    <button onclick="showAddSchoolModal()" class="bg-primary-yellow text-white px-4 py-2 rounded-lg hover:opacity-90">
+                        <i class="fas fa-plus mr-2"></i>Ajouter École
+                    </button>
+                </div>
+            </div>
+
+            <!-- Statistiques Générales -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-primary-blue">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Total Écoles</p>
+                            <p class="text-3xl font-bold text-primary-blue">4</p>
+                            <p class="text-sm text-green-600">+1 ce mois</p>
+                        </div>
+                        <div class="w-12 h-12 bg-primary-blue rounded-lg flex items-center justify-center">
+                            <i class="fas fa-school text-white text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-primary-yellow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Total Élèves</p>
+                            <p class="text-3xl font-bold text-primary-yellow">2,847</p>
+                            <p class="text-sm text-green-600">+45 ce mois</p>
+                        </div>
+                        <div class="w-12 h-12 bg-primary-yellow rounded-lg flex items-center justify-center">
+                            <i class="fas fa-user-graduate text-white text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-primary-blue">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Total Enseignants</p>
+                            <p class="text-3xl font-bold text-primary-blue">184</p>
+                            <p class="text-sm text-green-600">+8 ce mois</p>
+                        </div>
+                        <div class="w-12 h-12 bg-primary-blue rounded-lg flex items-center justify-center">
+                            <i class="fas fa-chalkboard-teacher text-white text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-card bg-white rounded-lg shadow-md p-6 border-l-4 border-primary-yellow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Revenus ce Mois</p>
+                            <p class="text-3xl font-bold text-primary-yellow">45.2M</p>
+                            <p class="text-sm text-green-600">+12% vs mois dernier</p>
+                        </div>
+                        <div class="w-12 h-12 bg-primary-yellow rounded-lg flex items-center justify-center">
+                            <i class="fas fa-money-bill-wave text-white text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Graphiques -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-primary-black mb-4">Évolution des Inscriptions</h3>
+                    <div class="chart-container">
+                        <canvas id="inscriptionsChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-primary-black mb-4">Répartition des Élèves par École</h3>
+                    <div class="chart-container">
+                        <canvas id="schoolDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activités Récentes et Alertes -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <div class="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-primary-black mb-4">Activités Récentes</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+                            <div class="w-10 h-10 bg-primary-blue rounded-lg flex items-center justify-center">
+                                <i class="fas fa-user-plus text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium text-primary-black">Nouvel enseignant ajouté</p>
+                                <p class="text-sm text-gray-600">Mme Fatou Diop - École Les Palmiers</p>
+                                <p class="text-xs text-gray-500">Il y a 2 heures</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+                            <div class="w-10 h-10 bg-primary-yellow rounded-lg flex items-center justify-center">
+                                <i class="fas fa-money-bill text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium text-primary-black">Paiement reçu</p>
+                                <p class="text-sm text-gray-600">75,000 FCFA - Frais de scolarité</p>
+                                <p class="text-xs text-gray-500">Il y a 3 heures</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-primary-black mb-4">Alertes Importantes</h3>
+                    <div class="space-y-3">
+                        <div class="p-3 bg-red-50 border-l-4 border-red-500 rounded">
+                            <p class="text-sm font-medium text-red-800">5 paiements en retard</p>
+                            <p class="text-xs text-red-600">École Les Palmiers</p>
+                        </div>
+                        
+                        <div class="p-3 bg-yellow-50 border-l-4 border-yellow-500 rounded">
+                            <p class="text-sm font-medium text-yellow-800">Classe surchargée</p>
+                            <p class="text-xs text-yellow-600">CM2 A - 45 élèves</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance par École -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-primary-black mb-4">Performance par École</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b-2 border-gray-200">
+                                <th class="text-left py-3 px-4 font-semibold text-primary-black">École</th>
+                                <th class="text-left py-3 px-4 font-semibold text-primary-black">Élèves</th>
+                                <th class="text-left py-3 px-4 font-semibold text-primary-black">Enseignants</th>
+                                <th class="text-left py-3 px-4 font-semibold text-primary-black">Taux Réussite</th>
+                                <th class="text-left py-3 px-4 font-semibold text-primary-black">Revenus (Mois)</th>
+                                <th class="text-left py-3 px-4 font-semibold text-primary-black">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="py-3 px-4">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-8 h-8 bg-primary-blue rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-school text-white text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-primary-black">École Les Palmiers</p>
+                                            <p class="text-sm text-gray-600">Dakar</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-3 px-4"><span class="text-primary-blue font-semibold">856</span></td>
+                                <td class="py-3 px-4"><span class="text-primary-blue font-semibold">52</span></td>
+                                <td class="py-3 px-4"><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">94.5%</span></td>
+                                <td class="py-3 px-4"><span class="text-primary-yellow font-semibold">15.2M FCFA</span></td>
+                                <td class="py-3 px-4">
+                                    <button onclick="showSchoolDetails('school1')" class="bg-primary-blue text-white px-3 py-1 rounded text-sm hover:opacity-90">
+                                        Détails
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+</html>

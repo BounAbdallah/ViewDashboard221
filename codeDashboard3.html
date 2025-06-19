@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin École</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-yellow: #F7B000;
+            --primary-blue: #407CEE;
+            --primary-black: #000000;
+        }
+        
+        .bg-primary-yellow { background-color: var(--primary-yellow); }
+        .bg-primary-blue { background-color: var(--primary-blue); }
+        .text-primary-yellow { color: var(--primary-yellow); }
+        .text-primary-blue { color: var(--primary-blue); }
+        .border-primary-yellow { border-color: var(--primary-yellow); }
+        .border-primary-blue { border-color: var(--primary-blue); }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar-link {
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-link:hover {
+            background: linear-gradient(135deg, var(--primary-yellow), var(--primary-blue));
+            color: white;
+        }
+        
+        .sidebar-link.active {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-yellow));
+            color: white;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-yellow));
+        }
+        
+        .school-card {
+            background: linear-gradient(135deg, rgba(247, 176, 0, 0.1), rgba(64, 124, 238, 0.1));
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+        
+        .school-card:hover {
+            border: 2px solid var(--primary-yellow);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Sidebar -->
+    <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl">
+        <div class="gradient-bg p-6">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                    <i class="fas fa-graduation-cap text-primary-blue text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-white font-bold text-lg">EduAdmin</h1>
+                    <p class="text-white text-sm opacity-80">Gestion d'Écoles</p>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="mt-8 px-4">
+            <div class="space-y-2">
+                <a href="#" class="sidebar-link active flex items-center space-x-3 px-4 py-3 rounded-lg">
+                    <i class="fas fa-tachometer-alt w-5"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
+                    <i class="fas fa-school w-5"></i>
+                    <span>Mes Écoles</span>
+                </a>
+                <a href="#" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
+                    <i class="fas fa-chalkboard-teacher w-5"></i>
+                    <span>Enseignants</span>
+                </a>
+                <a href="#" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
+                    <i class="fas fa-users w-5"></i>
+                    <span>Employés</span>
+                </a>
+                <a href="#" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
+                    <i class="fas fa-user-graduate w-5"></i>
+                    <span>Étudiants</span>
+                </a>
+                <a href="#" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
+                    <i class="fas fa-chart-bar w-5"></i>
+                    <span>Statistiques</span>
+                </a>
+                <a href="#" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
+                    <i class="fas fa-calendar-alt w-5"></i>
+                    <span>Planning</span>
+                </a>
+                <a href="#" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
+                    <i class="fas fa-euro-sign w-5"></i>
+                    <span>Finances</span>
+                </a>
+                <a href="#" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg">
+                    <i class="fas fa-cog w-5"></i>
+                    <span>Paramètres</span>
+                </a>
+            </div>
+        </nav>
+        
+        <div class="absolute bottom-4 left-4 right-4">
+            <div class="bg-gray-100 rounded-lg p-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-primary-blue rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-sm">Jean Dupont</p>
+                        <p class="text-xs text-gray-600">Super Admin</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-64 min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b px-8 py-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">Dashboard Principal</h2>
+                    <p class="text-gray-600">Vue d'ensemble de vos établissements scolaires</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <select class="bg-white border-2 border-primary-yellow rounded-lg px-4 py-2 pr-8 focus:outline-none">
+                            <option>Toutes les écoles</option>
+                            <option>École Primaire Lumière</option>
+                            <option>Collège Saint-Pierre</option>
+                            <option>Lycée Victor Hugo</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-bell text-primary-blue text-xl"></i>
+                        <span class="bg-red-500 text-white text-xs rounded-full px-2 py-1">3</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Content -->
+        <main class="p-8">
+            <!-- Stats Overview -->
+            <div class="stats-grid mb-8">
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover animate-fade-in">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-medium">Total Écoles</p>
+                            <p class="text-3xl font-bold text-gray-900">3</p>
+                            <p class="text-green-600 text-sm mt-1"><i class="fas fa-arrow-up"></i> +15% ce mois</p>
+                        </div>
+                        <div class="w-12 h-12 bg-primary-blue rounded-full flex items-center justify-center">
+                            <i class="fas fa-school text-white text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover animate-fade-in">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-medium">Total Étudiants</p>
+                            <p class="text-3xl font-bold text-gray-900">2,847</p>
+                            <p class="text-green-600 text-sm mt-1"><i class="fas fa-arrow-up"></i> +8% ce mois</p>
+                        </div>
+                        <div class="w-12 h-12 bg-primary-yellow rounded-full flex items-center justify-center">
+                            <i class="fas fa-user-graduate text-white text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover animate-fade-in">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-medium">Total Enseignants</p>
+                            <p class="text-3xl font-bold text-gray-900">198</p>
+                            <p class="text-green-600 text-sm mt-1"><i class="fas fa-arrow-up"></i> +3% ce mois</p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-chalkboard-teacher text-white text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover animate-fade-in">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-medium">Personnel Total</p>
+                            <p class="text-3xl font-bold text-gray-900">342</p>
+                            <p class="text-blue-600 text-sm mt-1"><i class="fas fa-minus"></i> Stable</p>
+                        </div>
+                        <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-users text-white text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- School Cards -->
+            <div class="mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-gray-900">Mes Établissements</h3>
+                    <button class="bg-primary-blue text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                        <i class="fas fa-plus mr-2"></i>Ajouter École
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- École 1 -->
+                    <div class="school-card rounded-xl p-6 card-hover animate-fade-in">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="font-bold text-lg text-gray-900">École Primaire Lumière</h4>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Active</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Étudiants:</span>
+                                <span class="font-semibold">450</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Enseignants:</span>
+                                <span class="font-semibold">28</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Classes:</span>
+                                <span class="font-semibold">18</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Taux présence:</span>
+                                <span class="font-semibold text-green-600">94%</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <button class="w-full bg-primary-yellow text-white py-2 rounded-lg hover:bg-yellow-500 transition-colors">
+                                Voir Détails
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- École 2 -->
+                    <div class="school-card rounded-xl p-6 card-hover animate-fade-in">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="font-bold text-lg text-gray-900">Collège Saint-Pierre</h4>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Active</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Étudiants:</span>
+                                <span class="font-semibold">1,200</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Enseignants:</span>
+                                <span class="font-semibold">85</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Classes:</span>
+                                <span class="font-semibold">48</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Taux présence:</span>
+                                <span class="font-semibold text-green-600">91%</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <button class="w-full bg-primary-yellow text-white py-2 rounded-lg hover:bg-yellow-500 transition-colors">
+                                Voir Détails
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- École 3 -->
+                    <div class="school-card rounded-xl p-6 card-hover animate-fade-in">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="font-bold text-lg text-gray-900">Lycée Victor Hugo</h4>
+                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">Maintenance</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Étudiants:</span>
+                                <span class="font-semibold">1,197</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Enseignants:</span>
+                                <span class="font-semibold">85</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Classes:</span>
+                                <span class="font-semibold">42</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Taux présence:</span>
+                                <span class="font-semibold text-orange-600">87%</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <button class="w-full bg-primary-yellow text-white py-2 rounded-lg hover:bg-yellow-500 transition-colors">
+                                Voir Détails
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts and Analytics -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- Evolution des effectifs -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-900">Évolution des Effectifs</h3>
+                        <select class="border border-gray-300 rounded px-3 py-1 text-sm">
+                            <option>6 derniers mois</option>
+                            <option>1 an</option>
+                            <option>2 ans</option>
+                        </select>
+                    </div>
+                    <canvas id="studentsChart" width="400" height="200"></canvas>
+                </div>
+
+                <!-- Répartition par école -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Répartition des Étudiants</h3>
+                    <canvas id="distributionChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Personnel Overview -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                <!-- Enseignants -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-900">Enseignants</h3>
+                        <i class="fas fa-chalkboard-teacher text-primary-blue text-xl"></i>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Total Actifs</span>
+                            <span class="font-bold text-2xl text-green-600">198</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm text-gray-600">Nouveaux ce mois</span>
+                            <span class="text-sm font-semibold text-green-600">+5</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm text-gray-600">En congé</span>
+                            <span class="text-sm font-semibold text-yellow-600">12</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-primary-blue h-2 rounded-full" style="width: 85%"></div>
+                        </div>
+                        <p class="text-xs text-gray-600">85% de taux de satisfaction</p>
+                    </div>
+                </div>
+
+                <!-- Personnel Administratif -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-900">Personnel Admin</h3>
+                        <i class="fas fa-users-cog text-primary-yellow text-xl"></i>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Total Actifs</span>
+                            <span class="font-bold text-2xl text-blue-600">89</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm text-gray-600">Secrétaires</span>
+                            <span class="text-sm font-semibold">24</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm text-gray-600">Techniciens</span>
+                            <span class="text-sm font-semibold">18</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-primary-yellow h-2 rounded-full" style="width: 92%"></div>
+                        </div>
+                        <p class="text-xs text-gray-600">92% de présence moyenne</p>
+                    </div>
+                </div>
+
+                <!-- Personnel d'Entretien -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-900">Entretien</h3>
+                        <i class="fas fa-broom text-green-500 text-xl"></i>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Total Actifs</span>
+                            <span class="font-bold text-2xl text-green-600">55</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm text-gray-600">Agents nettoyage</span>
+                            <span class="text-sm font-semibold">32</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm text-gray-600">Gardiens</span>
+                            <span class="text-sm font-semibold">15</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: 78%"></div>
+                        </div>
+                        <p class="text-xs text-gray-600">78% d'efficacité moyenne</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions & Recent Activity -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Actions Rapides -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-6">Actions Rapides</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button class="flex flex-col items-center p-4 border-2 border-dashed border-primary-yellow rounded-lg hover:bg-yellow-50 transition-colors">
+                            <i class="fas fa-user-plus text-primary-yellow text-2xl mb-2"></i>
+                            <span class="text-sm font-medium">Nouvel Enseignant</span>
+                        </button>
+                        <button class="flex flex-col items-center p-4 border-2 border-dashed border-primary-blue rounded-lg hover:bg-blue-50 transition-colors">
+                            <i class="fas fa-graduation-cap text-primary-blue text-2xl mb-2"></i>
+                            <span class="text-sm font-medium">Nouvel Étudiant</span>
+                        </button>
+                        <button class="flex flex-col items-center p-4 border-2 border-dashed border-green-500 rounded-lg hover:bg-green-50 transition-colors">
+                            <i class="fas fa-calendar-plus text-green-500 text-2xl mb-2"></i>
+                            <span class="text-sm font-medium">Planifier Cours</span>
+                        </button>
+                        <button class="flex flex-col items-center p-4 border-2 border-dashed border-purple-500 rounded-lg hover:bg-purple-50 transition-colors">
+                            <i class="fas fa-file-alt text-purple-500 text-2xl mb-2"></i>
+                            <span class="text-sm font-medium">Générer Rapport</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Activité Récente -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-6">Activité Récente</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
+                            <div class="w-8 h-8 bg-primary-blue rounded-full flex items-center justify-center">
+                                <i class="fas fa-user-plus text-white text-xs"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium">Nouvel enseignant ajouté</p>
+                                <p class="text-xs text-gray-600">Marie Dubois - Mathématiques</p>
+                            </div>
+                            <span class="text-xs text-gray-500">2h</span>
+                        </div>
+                        
+                        <div class="flex items-center space-x-3 p-3 bg-yellow-50 rounded-lg">
+                            <div class="w-8 h-8 bg-primary-yellow rounded-full flex items-center justify-center">
+                                <i class="fas fa-exclamation text-white text-xs"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium">Alerte maintenance</p>
+                                <p class="text-xs text-gray-600">Lycée Victor Hugo - Salle informatique</p>
+                            </div>
+                            <span class="text-xs text-gray-500">4h</span>
+                        </div>
+                        
+                        <div class="flex items-center space-x-3 p-3 bg-green-50 rounded-lg">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-check text-white text-xs"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium">Rapport mensuel généré</p>
+                                <p class="text-xs text-gray-600">Statistiques de fréquentation</p>
+                            </div>
+                            <span class="text-xs text-gray-500">1j</span>
+                        </div>
+                        
+                        <div class="flex items-center space-x-3 p-3 bg-purple-50 rounded-lg">
+                            <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-calendar text-white text-xs"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium">Planning mis à jour</p>
+                                <p class="text-xs text-gray-600">Collège Saint-Pierre - Semaine 23</p>
+                            </div>
+                            <span class="text-xs text-gray-500">2j</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Configuration des couleurs
+        const colors = {
+            primaryYellow: '#F7B000',
+            primaryBlue: '#407CEE',
+            primaryBlack: '#000000'
+        };
+
+        // Graphique d'évolution des effectifs
+        // const studentsCtx = document.getElementById('studentsChart').getContext('2d');
+        // new Chart(studentsCtx, {
+        //     type: 'line',
+        //     data: {
+        //         labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+        //         datasets: [{
+        //             label: 'Total Étudiants',
+        //             data: [2650, 2720, 2780, 2800, 2825, 2847],
+        //             borderColor: colors.primaryBlue,
+        //             backgroundColor: colors.primaryBlue + '20',
+        //             tension: 0.4,
+        //             fill: true
+        //         }, {
+        //             label: 'Enseignants',
+        //             data: [185, 188, 192, 195, 196, 198],
+        //             borderColor: colors.primaryYellow,
+        //             backgroundColor: colors.primaryYellow + '20',
+        //             tension: 0.4,
+        //             fill: true
+        //         }]
+        //     },
+        //     options: {
+        //         responsive: true,
+        //         maintainAspectRatio: false,
+        //         plugins: {
+        //             legend: {
+        //                 position: 'bottom'
+        //             }
+        //         },
+        //         scales: {
+        //             y: {
+        //                 beginAtZero: false,
+        //                 grid: {
+        //                     color: '#f3f4f6'
+        //                 }
+        //             },
+        //             x: {
+        //                 grid: {
+        //                     display: false
+        //                 }
+        //             }
+        //         }
+        //     }
+        // });
+
+        // // Graphique de répartition
+        // const distributionCtx = document.getElementById('distributionChart').getContext('2d');
+        // new Chart(distributionCtx, {
+        //     type: 'doughnut',
+        //     data: {
+        //         labels: ['École Primaire Lumière', 'Collège Saint-Pierre', 'Lycée Victor Hugo'],
+        //         datasets: [{
+        //             data: [450, 1200, 1197],
+        //             backgroundColor: [
+        //                 colors.primaryYellow,
+        //                 colors.primaryBlue,
+        //                 '#10B981'
+        //             ],
+        //             borderWidth: 0
+        //         }]
+        //     },
+        //     options: {
+        //         responsive: true,
+        //         maintainAspectRatio: false,
+        //         plugins: {
+        //             legend: {
+        //                 position: 'bottom',
+        //                 labels: {
+        //                     padding: 20,
+        //                     usePointStyle: true
+        //                 }
+        //             }
+        //         }
+        //     }
+        // });
+
+        // Gestion des liens de navigation
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Retirer la classe active de tous les liens
+                document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+                
+                // Ajouter la classe active au lien cliqué
+                this.classList.add('active');
+                
+                // Simuler le changement de contenu (à implémenter selon vos besoins)
+                const section = this.querySelector('span').textContent;
+                console.log('Navigation vers:', section);
+            });
+        });
+
+        // Animation au chargement
+        window.addEventListener('load', function() {
+            const cards = document.querySelectorAll('.animate-fade-in');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+
+        // Simulation de données en temps réel
+        function updateStats() {
+            const statsElements = document.querySelectorAll('.stats-grid .text-3xl');
+            statsElements.forEach(element => {
+                const currentValue = parseInt(element.textContent.replace(',', ''));
+                const variation = Math.floor(Math.random() * 10) - 5; // Variation de -5 à +5
+                const newValue = Math.max(0, currentValue + variation);
+                
+                if (element.textContent.includes(',')) {
+                    element.textContent = newValue.toLocaleString();
+                } else {
+                    element.textContent = newValue;
+                }
+            });
+        }
+
+        // Mettre à jour les stats toutes les 30 secondes (pour demo)
+        setInterval(updateStats, 30000);
+
+        // Gestion des notifications
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg text-white transition-all duration-300 transform translate-x-full`;
+            
+            switch(type) {
+                case 'success':
+                    notification.classList.add('bg-green-500');
+                    break;
+                case 'warning':
+                    notification.classList.add('bg-yellow-500');
+                    break;
+                case 'error':
+                    notification.classList.add('bg-red-500');
+                    break;
+                default:
+                    notification.classList.add('bg-blue-500');
+            }
+            
+            notification.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-info-circle"></i>
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animation d'entrée
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Suppression automatique après 5 secondes
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+
+        // Gestion des boutons d'action rapide
+        document.querySelectorAll('.grid .flex.flex-col.items-center').forEach(button => {
+            button.addEventListener('click', function() {
+                const action = this.querySelector('span').textContent;
+                showNotification(`Action "${action}" en cours de développement`, 'info');
+            });
+        });
+
+        // Gestion du sélecteur d'école
+        document.querySelector('select').addEventListener('change', function() {
+            const selectedSchool = this.value;
+            showNotification(`Affichage des données pour: ${selectedSchool}`, 'success');
+            
+            // Ici vous pourriez filtrer les données selon l'école sélectionnée
+            console.log('École sélectionnée:', selectedSchool);
+        });
+
+        // Fonction pour simuler le chargement des détails d'une école
+        document.querySelectorAll('.school-card button').forEach(button => {
+            button.addEventListener('click', function() {
+                const schoolName = this.closest('.school-card').querySelector('h4').textContent;
+                showNotification(`Chargement des détails pour ${schoolName}...`, 'info');
+                
+                // Simulation d'un délai de chargement
+                setTimeout(() => {
+                    showNotification(`Détails de ${schoolName} chargés avec succès`, 'success');
+                }, 1500);
+            });
+        });
+
+        // Gestion responsive du menu mobile (pour écrans plus petits)
+        function handleMobileMenu() {
+            if (window.innerWidth < 1024) {
+                const sidebar = document.querySelector('.fixed.inset-y-0.left-0');
+                const mainContent = document.querySelector('.ml-64');
+                
+                sidebar.classList.add('-translate-x-full', 'transition-transform');
+                mainContent.classList.remove('ml-64');
+                
+                // Bouton pour toggle le menu mobile
+                const mobileMenuButton = document.createElement('button');
+                mobileMenuButton.className = 'fixed top-4 left-4 z-50 bg-primary-blue text-white p-3 rounded-lg lg:hidden';
+                mobileMenuButton.innerHTML = '<i class="fas fa-bars"></i>';
+                mobileMenuButton.onclick = () => {
+                    sidebar.classList.toggle('-translate-x-full');
+                };
+                
+                if (!document.querySelector('.fixed.top-4.left-4')) {
+                    document.body.appendChild(mobileMenuButton);
+                }
+            }
+        }
+
+        // Appliquer la gestion responsive au chargement et au redimensionnement
+        window.addEventListener('load', handleMobileMenu);
+        window.addEventListener('resize', handleMobileMenu);
+
+        // Fonction pour exporter les données (simulation)
+        function exportData(format) {
+            showNotification(`Export des données en format ${format.toUpperCase()} en cours...`, 'info');
+            
+            setTimeout(() => {
+                showNotification(`Export ${format.toUpperCase()} terminé avec succès`, 'success');
+            }, 2000);
+        }
+
+        // Ajouter des raccourcis clavier
+        document.addEventListener('keydown', function(e) {
+            // Ctrl + N : Nouveau
+            if (e.ctrlKey && e.key === 'n') {
+                e.preventDefault();
+                showNotification('Raccourci: Nouveau (Ctrl+N)', 'info');
+            }
+            
+            // Ctrl + S : Sauvegarder
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                showNotification('Raccourci: Sauvegarder (Ctrl+S)', 'success');
+            }
+            
+            // Ctrl + E : Exporter
+            if (e.ctrlKey && e.key === 'e') {
+                e.preventDefault();
+                exportData('excel');
+            }
+        });
+
+        // Fonction pour mettre à jour l'heure en temps réel
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('fr-FR');
+            const dateString = now.toLocaleDateString('fr-FR', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            // Ajouter l'heure dans le header si elle n'existe pas déjà
+            const header = document.querySelector('header div div:first-child');
+            let timeElement = document.getElementById('current-time');
+            
+            if (!timeElement) {
+                timeElement = document.createElement('p');
+                timeElement.id = 'current-time';
+                timeElement.className = 'text-sm text-gray-500 mt-1';
+                header.appendChild(timeElement);
+            }
+            
+            timeElement.textContent = `${dateString} - ${timeString}`;
+        }
+
+        // Mettre à jour l'heure toutes les secondes
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        console.log('Dashboard École Admin chargé avec succès!');
+        console.log('Fonctionnalités disponibles:');
+        console.log('- Navigation interactive');
+        console.log('- Graphiques temps réel');
+        console.log('- Notifications système');
+        console.log('- Raccourcis clavier (Ctrl+N, Ctrl+S, Ctrl+E)');
+        console.log('- Interface responsive');
+        console.log('- Mise à jour automatique des statistiques');
+    </script>
+</body>
+</html>

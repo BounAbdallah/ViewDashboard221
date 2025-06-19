@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - Gestion Multi-Écoles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #F7B000;
+            --secondary-color: #407CEE;
+            --text-color: #000000;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+        
+        .sidebar-item:hover {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            transform: translateX(5px);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, rgba(247, 176, 0, 0.1), rgba(64, 124, 238, 0.1));
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .school-card {
+            background: linear-gradient(135deg, rgba(247, 176, 0, 0.05), rgba(64, 124, 238, 0.05));
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+        
+        .school-card:hover {
+            border: 2px solid var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(64, 124, 238, 0.2);
+        }
+        
+        .chart-container {
+            background: linear-gradient(135deg, rgba(247, 176, 0, 0.03), rgba(64, 124, 238, 0.03));
+        }
+        
+        .active-tab {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .notification-badge {
+            background: var(--primary-color);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Header -->
+    <header class="bg-white shadow-lg border-b-4" style="border-color: #F7B000;">
+        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center text-white text-xl font-bold" style="background: linear-gradient(135deg, #F7B000, #407CEE);">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h1 class="text-2xl font-bold text-gray-900">SchoolAdmin Pro</h1>
+                        <p class="text-sm text-gray-600">Gestion Multi-Écoles</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <!-- Sélecteur d'école -->
+                    <div class="relative">
+                        <select class="bg-white border-2 rounded-lg px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2" style="border-color: #407CEE; color: #407CEE;">
+                            <option>Toutes les écoles</option>
+                            <option>École Primaire Dakar</option>
+                            <option>Collège Moderne Plateau</option>
+                            <option>Lycée Excellence Almadies</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Notifications -->
+                    <div class="relative">
+                        <button class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+                            <i class="fas fa-bell text-xl" style="color: #407CEE;"></i>
+                            <span class="absolute -top-1 -right-1 notification-badge text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Profil utilisateur -->
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full overflow-hidden" style="background: linear-gradient(135deg, #F7B000, #407CEE);">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" alt="Admin" class="w-full h-full object-cover">
+                        </div>
+                        <div class="hidden md:block">
+                            <p class="text-sm font-medium text-gray-900">Admin Principal</p>
+                            <p class="text-xs text-gray-500">admin@schoolpro.sn</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex h-screen pt-16">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-lg custom-scrollbar overflow-y-auto">
+            <nav class="p-4 space-y-2">
+                <div class="sidebar-item p-3 rounded-lg cursor-pointer" style="background: linear-gradient(135deg, #F7B000, #407CEE); color: white;">
+                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    <span class="font-medium">Tableau de bord</span>
+                </div>
+                
+                <div class="sidebar-item p-3 rounded-lg cursor-pointer text-gray-700 hover:text-white">
+                    <i class="fas fa-school mr-3"></i>
+                    <span class="font-medium">Écoles</span>
+                </div>
+                
+                <div class="sidebar-item p-3 rounded-lg cursor-pointer text-gray-700 hover:text-white">
+                    <i class="fas fa-chalkboard-teacher mr-3"></i>
+                    <span class="font-medium">Enseignants</span>
+                </div>
+                
+                <div class="sidebar-item p-3 rounded-lg cursor-pointer text-gray-700 hover:text-white">
+                    <i class="fas fa-users mr-3"></i>
+                    <span class="font-medium">Employés</span>
+                </div>
+                
+                <div class="sidebar-item p-3 rounded-lg cursor-pointer text-gray-700 hover:text-white">
+                    <i class="fas fa-user-graduate mr-3"></i>
+                    <span class="font-medium">Étudiants</span>
+                </div>
+                
+                <div class="sidebar-item p-3 rounded-lg cursor-pointer text-gray-700 hover:text-white">
+                    <i class="fas fa-chart-line mr-3"></i>
+                    <span class="font-medium">Statistiques</span>
+                </div>
+                
+                <div class="sidebar-item p-3 rounded-lg cursor-pointer text-gray-700 hover:text-white">
+                    <i class="fas fa-money-bill-wave mr-3"></i>
+                    <span class="font-medium">Finances</span>
+                </div>
+                
+                <div class="sidebar-item p-3 rounded-lg cursor-pointer text-gray-700 hover:text-white">
+                    <i class="fas fa-calendar-alt mr-3"></i>
+                    <span class="font-medium">Planning</span>
+                </div>
+                
+                <div class="sidebar-item p-3 rounded-lg cursor-pointer text-gray-700 hover:text-white">
+                    <i class="fas fa-cog mr-3"></i>
+                    <span class="font-medium">Paramètres</span>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
+            <!-- Statistiques Générales -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="stat-card bg-white p-6 rounded-xl shadow-md">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Total Écoles</p>
+                            <p class="text-3xl font-bold text-gray-900">12</p>
+                            <p class="text-sm text-green-600 flex items-center mt-2">
+                                <i class="fas fa-arrow-up mr-1"></i>
+                                +2 ce mois
+                            </p>
+                        </div>
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center text-white" style="background: #407CEE;">
+                            <i class="fas fa-school text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card bg-white p-6 rounded-xl shadow-md">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Total Enseignants</p>
+                            <p class="text-3xl font-bold text-gray-900">284</p>
+                            <p class="text-sm text-green-600 flex items-center mt-2">
+                                <i class="fas fa-arrow-up mr-1"></i>
+                                +18 ce mois
+                            </p>
+                        </div>
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center text-white" style="background: #F7B000;">
+                            <i class="fas fa-chalkboard-teacher text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card bg-white p-6 rounded-xl shadow-md">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Total Employés</p>
+                            <p class="text-3xl font-bold text-gray-900">156</p>
+                            <p class="text-sm text-blue-600 flex items-center mt-2">
+                                <i class="fas fa-minus mr-1"></i>
+                                Stable
+                            </p>
+                        </div>
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center text-white" style="background: #407CEE;">
+                            <i class="fas fa-users text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card bg-white p-6 rounded-xl shadow-md">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Total Étudiants</p>
+                            <p class="text-3xl font-bold text-gray-900">3,847</p>
+                            <p class="text-sm text-green-600 flex items-center mt-2">
+                                <i class="fas fa-arrow-up mr-1"></i>
+                                +156 ce mois
+                            </p>
+                        </div>
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center text-white" style="background: #F7B000;">
+                            <i class="fas fa-user-graduate text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Graphiques et Écoles -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Graphique des inscriptions -->
+                <div class="lg:col-span-2 chart-container bg-white p-6 rounded-xl shadow-md">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Évolution des Inscriptions</h3>
+                        <div class="flex space-x-2">
+                            <button class="active-tab px-3 py-1 rounded-full text-xs font-medium">6M</button>
+                            <button class="px-3 py-1 rounded-full text-xs font-medium text-gray-600 hover:bg-gray-100">1A</button>
+                        </div>
+                    </div>
+                    <canvas id="enrollmentChart" width="400" height="200"></canvas>
+                </div>
+                
+                <!-- Top Écoles -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Top Écoles</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 rounded-lg" style="background: rgba(247, 176, 0, 0.1);">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold" style="background: #F7B000;">1</div>
+                                <div class="ml-3">
+                                    <p class="font-medium text-gray-900">Lycée Excellence</p>
+                                    <p class="text-sm text-gray-600">847 étudiants</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-green-600">98.5%</p>
+                                <p class="text-xs text-gray-500">Taux de réussite</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 rounded-lg" style="background: rgba(64, 124, 238, 0.1);">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold" style="background: #407CEE;">2</div>
+                                <div class="ml-3">
+                                    <p class="font-medium text-gray-900">Collège Moderne</p>
+                                    <p class="text-sm text-gray-600">623 étudiants</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-green-600">96.2%</p>
+                                <p class="text-xs text-gray-500">Taux de réussite</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 rounded-lg bg-gray-50">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center text-white text-sm font-bold">3</div>
+                                <div class="ml-3">
+                                    <p class="font-medium text-gray-900">École Primaire</p>
+                                    <p class="text-sm text-gray-600">456 étudiants</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-green-600">94.8%</p>
+                                <p class="text-xs text-gray-500">Taux de réussite</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Liste des Écoles -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-gray-900">Gestion des Écoles</h3>
+                        <button class="px-4 py-2 text-white rounded-lg font-medium hover:opacity-90 transition-opacity" style="background: linear-gradient(135deg, #F7B000, #407CEE);">
+                            <i class="fas fa-plus mr-2"></i>
+                            Nouvelle École
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+                    <!-- École 1 -->
+                    <div class="school-card p-6 rounded-xl transition-all duration-300">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-full flex items-center justify-center text-white" style="background: linear-gradient(135deg, #F7B000, #407CEE);">
+                                <i class="fas fa-school"></i>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                                    <i class="fas fa-edit text-sm" style="color: #407CEE;"></i>
+                                </button>
+                                <button class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                                    <i class="fas fa-chart-line text-sm" style="color: #F7B000;"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <h4 class="text-lg font-semibold text-gray-900 mb-2">École Primaire Dakar</h4>
+                        <p class="text-sm text-gray-600 mb-4">Plateau, Dakar - Sénégal</p>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div class="text-center">
+                                <p class="text-2xl font-bold" style="color: #407CEE;">456</p>
+                                <p class="text-xs text-gray-600">Étudiants</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-2xl font-bold" style="color: #F7B000;">24</p>
+                                <p class="text-xs text-gray-600">Enseignants</p>
+                            </div>
+                        </div>
+                        
+                        <div class="border-t pt-4">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600">Statut:</span>
+                                <span class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Actif</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm mt-2">
+                                <span class="text-gray-600">Taux de réussite:</span>
+                                <span class="font-medium text-green-600">94.8%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- École 2 -->
+                    <div class="school-card p-6 rounded-xl transition-all duration-300">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-full flex items-center justify-center text-white" style="background: linear-gradient(135deg, #407CEE, #F7B000);">
+                                <i class="fas fa-university"></i>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                                    <i class="fas fa-edit text-sm" style="color: #407CEE;"></i>
+                                </button>
+                                <button class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                                    <i class="fas fa-chart-line text-sm" style="color: #F7B000;"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <h4 class="text-lg font-semibold text-gray-900 mb-2">Collège Moderne Plateau</h4>
+                        <p class="text-sm text-gray-600 mb-4">Plateau, Dakar - Sénégal</p>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div class="text-center">
+                                <p class="text-2xl font-bold" style="color: #407CEE;">623</p>
+                                <p class="text-xs text-gray-600">Étudiants</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-2xl font-bold" style="color: #F7B000;">38</p>
+                                <p class="text-xs text-gray-600">Enseignants</p>
+                            </div>
+                        </div>
+                        
+                        <div class="border-t pt-4">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600">Statut:</span>
+                                <span class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Actif</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm mt-2">
+                                <span class="text-gray-600">Taux de réussite:</span>
+                                <span class="font-medium text-green-600">96.2%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- École 3 -->
+                    <div class="school-card p-6 rounded-xl transition-all duration-300">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-full flex items-center justify-center text-white" style="background: linear-gradient(135deg, #F7B000, #407CEE);">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                                    <i class="fas fa-edit text-sm" style="color: #407CEE;"></i>
+                                </button>
+                                <button class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                                    <i class="fas fa-chart-line text-sm" style="color: #F7B000;"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <h4 class="text-lg font-semibold text-gray-900 mb-2">Lycée Excellence Almadies</h4>
+                        <p class="text-sm text-gray-600 mb-4">Almadies, Dakar - Sénégal</p>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div class="text-center">
+                                <p class="text-2xl font-bold" style="color: #407CEE;">847</p>
+                                <p class="text-xs text-gray-600">Étudiants</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-2xl font-bold" style="color: #F7B000;">52</p>
+                                <p class="text-xs text-gray-600">Enseignants</p>
+                            </div>
+                        </div>
+                        
+                        <div class="border-t pt-4">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600">Statut:</span>
+                                <span class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Actif</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm mt-2">
+                                <span class="text-gray-600">Taux de réussite:</span>
+                                <span class="font-medium text-green-600">98.5%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activités Récentes et Personnel -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+                <!-- Activités Récentes -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Activités Récentes</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm" style="background: #F7B000;">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">Nouvel enseignant ajouté</p>
+                                <p class="text-xs text-gray-600">Marie Diop - Professeur de Mathématiques</p>
+                                <p class="text-xs text-gray-500 mt-1">Il y a 2 heures</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-3">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm" style="background: #407CEE;">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">Rapport mensuel généré</p>
+                                <p class="text-xs text-gray-600">Statistiques de performance - Mars 2025</p>
+                                <p class="text-xs text-gray-500 mt-1">Il y a 5 heures</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-3">
+                            <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-sm">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">Budget approuvé</p>
+                                <p class="text-xs text-gray-600">École Primaire Dakar - Matériel pédagogique</p>
+                                <p class="text-xs text-gray-500 mt-1">Hier à 14:30</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Aperçu Personnel -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Personnel Global</h3>
+                        <button class="text-sm font-medium hover:underline" style="color: #407CEE;">Voir tout</button>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 rounded-lg bg-gray-50">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-full overflow-hidden" style="background: linear-gradient(135deg, #F7B000, #407CEE);">
+                                    <div class="w-full h-full flex items-center justify-center text-white font-semibold">AD</div>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Amadou Diallo</p>
+                                    <p class="text-sm text-gray-600">Directeur - Lycée Excellence</p>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">En ligne</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 rounded-lg bg-gray-50">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-full overflow-hidden" style="background: linear-gradient(135deg, #407CEE, #F7B000);">
+                                    <div class="w-full h-full flex items-center justify-center text-white font-semibold">FM</div>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Fatou Mbaye</p>
+                                    <p class="text-sm text-gray-600">Secrétaire Générale - Collège Moderne</p>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Occupé</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 rounded-lg bg-gray-50">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-full overflow-hidden" style="background: linear-gradient(135deg, #F7B000, #407CEE);">
+                                    <div class="w-full h-full flex items-center justify-center text-white font-semibold">IS</div>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Ibrahima Sarr</p>
+                                    <p class="text-sm text-gray-600">Comptable - École Primaire</p>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Hors ligne</span>
+                        </div>
+                        
+                        <div class="mt-4 p-4 rounded-lg" style="background: rgba(247, 176, 0, 0.1);">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-semibold text-gray-900">Réunion d'équipe</p>
+                                    <p class="text-sm text-gray-600">Directeurs - Planification T2</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm font-medium" style="color: #F7B000;">Aujourd'hui</p>
+                                    <p class="text-xs text-gray-600">15:00 - 16:30</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tableau de bord financier rapide -->
+            <div class="mt-8 bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-6 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Aperçu Financier</h3>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+                    <div class="p-6 text-center">
+                        <div class="w-12 h-12 mx-auto rounded-full flex items-center justify-center text-white mb-3" style="background: #407CEE;">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <p class="text-2xl font-bold text-gray-900">2.4M CFA</p>
+                        <p class="text-sm text-gray-600">Revenus du mois</p>
+                        <p class="text-xs text-green-600 mt-1">+12% vs mois dernier</p>
+                    </div>
+                    
+                    <div class="p-6 text-center">
+                        <div class="w-12 h-12 mx-auto rounded-full flex items-center justify-center text-white mb-3" style="background: #F7B000;">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <p class="text-2xl font-bold text-gray-900">1.8M CFA</p>
+                        <p class="text-sm text-gray-600">Dépenses du mois</p>
+                        <p class="text-xs text-red-600 mt-1">+5% vs mois dernier</p>
+                    </div>
+                    
+                    <div class="p-6 text-center">
+                        <div class="w-12 h-12 mx-auto rounded-full bg-green-500 flex items-center justify-center text-white mb-3">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <p class="text-2xl font-bold text-gray-900">600K CFA</p>
+                        <p class="text-sm text-gray-600">Bénéfice net</p>
+                        <p class="text-xs text-green-600 mt-1">+25% vs mois dernier</p>
+                    </div>
+                    
+                    <div class="p-6 text-center">
+                        <div class="w-12 h-12 mx-auto rounded-full bg-purple-500 flex items-center justify-center text-white mb-3">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <p class="text-2xl font-bold text-gray-900">95.2%</p>
+                        <p class="text-sm text-gray-600">Taux de paiement</p>
+                        <p class="text-xs text-green-600 mt-1">Excellent</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- <script>
+        // Configuration des graphiques
+        const ctx = document.getElementById('enrollmentChart').getContext('2d');
+        const enrollmentChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun'],
+                datasets: [{
+                    label: 'Nouvelles inscriptions',
+                    data: [45, 52, 38, 67, 73, 89],
+                    borderColor: '#407CEE',
+                    backgroundColor: 'rgba(64, 124, 238, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#407CEE',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                }, {
+                    label: 'Désinscriptions',
+                    data: [12, 8, 15, 22, 18, 14],
+                    borderColor: '#F7B000',
+                    backgroundColor: 'rgba(247, 176, 0, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#F7B000',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                family: 'system-ui'
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)',
+                        },
+                        ticks: {
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false,
+                        },
+                        ticks: {
+                            font: {
+                                size: 11
+                            }
+                        }
+                    }
+                },
+                elements: {
+                    point: {
+                        hoverRadius: 8,
+                    }
+                }
+            }
+        });
+
+        // Interactions JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animation des cartes d'école au survol
+            const schoolCards = document.querySelectorAll('.school-card');
+            schoolCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Animation des éléments de la sidebar
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            sidebarItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    sidebarItems.forEach(i => {
+                        i.classList.remove('active');
+                        i.style.background = '';
+                        i.style.color = '#374151';
+                    });
+                    
+                    this.classList.add('active');
+                    this.style.background = 'linear-gradient(135deg, #F7B000, #407CEE)';
+                    this.style.color = 'white';
+                });
+            });
+
+            // Mise à jour en temps réel des statistiques (simulation)
+            setInterval(function() {
+                const stats = document.querySelectorAll('.stat-card .text-3xl');
+                stats.forEach(stat => {
+                    const currentValue = parseInt(stat.textContent.replace(',', ''));
+                    const randomChange = Math.floor(Math.random() * 3) - 1; // -1, 0, ou 1
+                    const newValue = currentValue + randomChange;
+                    
+                    if (newValue > 0) {
+                        stat.textContent = newValue.toLocaleString();
+                    }
+                });
+            }, 30000); // Mise à jour toutes les 30 secondes
+
+            // Gestion des notifications
+            const notificationBell = document.querySelector('.fa-bell').parentElement;
+            notificationBell.addEventListener('click', function() {
+                alert('3 nouvelles notifications:\n\n1. Nouveau message du directeur\n2. Rapport mensuel disponible\n3. Réunion programmée demain');
+            });
+
+            // Fonction de recherche rapide
+            function createSearchBar() {
+                const header = document.querySelector('header .flex');
+                const searchDiv = document.createElement('div');
+                searchDiv.className = 'relative hidden md:block';
+                searchDiv.innerHTML = `
+                    <input type="text" 
+                           placeholder="Rechercher une école, un enseignant..." 
+                           class="w-80 pl-10 pr-4 py-2 border-2 rounded-lg focus:outline-none focus:ring-2"
+                           style="border-color: #407CEE; focus:ring-color: #F7B000;">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                `;
+                header.insertBefore(searchDiv, header.children[1]);
+            }
+            
+            createSearchBar();
+
+            // Animation de chargement pour les cartes
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+
+            document.querySelectorAll('.school-card, .stat-card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+        });
+
+        // Fonction pour exporter les données
+        function exportData() {
+            const data = {
+                ecoles: 12,
+                enseignants: 284,
+                employes: 156,
+                etudiants: 3847,
+                timestamp: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'dashboard-data.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Gestion responsive du menu mobile
+        function toggleMobileMenu() {
+            const sidebar = document.querySelector('aside');
+            const overlay = document.querySelector('.mobile-overlay');
+            
+            if (window.innerWidth < 768) {
+                sidebar.classList.toggle('translate-x-0');
+                sidebar.classList.toggle('-translate-x-full');
+                
+                if (!overlay) {
+                    const div = document.createElement('div');
+                    div.className = 'mobile-overlay fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden';
+                    div.addEventListener('click', toggleMobileMenu);
+                    document.body.appendChild(div);
+                } else {
+                    overlay.remove();
+                }
+            }
+        }
+
+        // Ajout du bouton menu mobile
+        window.addEventListener('load', function() {
+            if (window.innerWidth < 768) {
+                const header = document.querySelector('header .flex');
+                const menuButton = document.createElement('button');
+                menuButton.className = 'md:hidden p-2 rounded-lg';
+                menuButton.innerHTML = '<i class="fas fa-bars text-xl" style="color: #407CEE;"></i>';
+                menuButton.addEventListener('click', toggleMobileMenu);
+                header.insertBefore(menuButton, header.firstChild);
+                
+                // Masquer la sidebar par défaut sur mobile
+                const sidebar = document.querySelector('aside');
+                sidebar.classList.add('-translate-x-full', 'fixed', 'z-50', 'h-full');
+            }
+        });
+    </script> -->
+</body>
+</html>

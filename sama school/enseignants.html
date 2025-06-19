@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MySchool 221 - Gestion des Enseignants</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg border-b-4 border-primary-blue">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <button id="menu-toggle" class="md:hidden text-primary-blue">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-primary-blue rounded-lg flex items-center justify-center">
+                            <i class="fas fa-graduation-cap text-white text-lg"></i>
+                        </div>
+                        <h1 class="text-2xl font-bold text-primary-black">MySchool 221</h1>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button onclick="showNotifications()" class="relative p-2 text-primary-blue hover:bg-gray-100 rounded-lg">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">5</span>
+                    </button>
+                    
+                    <div class="flex items-center space-x-3">
+                        <img src="/placeholder.svg?height=40&width=40" alt="Admin" class="w-10 h-10 rounded-full border-2 border-primary-yellow">
+                        <div class="hidden md:block">
+                            <p class="text-sm font-medium text-primary-black">Admin Principal</p>
+                            <p class="text-xs text-gray-500">Super Administrateur</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar bg-white w-64 min-h-screen shadow-lg border-r-4 border-primary-yellow">
+            <div class="p-6">
+                <div class="space-y-2">
+                    <a href="index.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-tachometer-alt text-primary-blue"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    
+                    <a href="ecoles.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-school text-primary-blue"></i>
+                        <span>Gestion des Écoles</span>
+                    </a>
+                    
+                    <a href="enseignants.html" class="flex items-center space-x-3 p-3 rounded-lg bg-primary-blue text-white">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>Enseignants & Employés</span>
+                    </a>
+                    
+                    <a href="eleves.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-user-graduate text-primary-blue"></i>
+                        <span>Élèves</span>
+                    </a>
+                    
+                    <a href="classes.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-users text-primary-blue"></i>
+                        <span>Classes</span>
+                    </a>
+                    
+                    <a href="finances.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-money-bill-wave text-primary-blue"></i>
+                        <span>Finances</span>
+                    </a>
+                    
+                    <a href="emplois-temps.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-calendar-alt text-primary-blue"></i>
+                        <span>Emplois du Temps</span>
+                    </a>
+                    
+                    <a href="notes.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-file-alt text-primary-blue"></i>
+                        <span>Notes & Bulletins</span>
+                    </a>
+                    
+                    <a href="presences.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-clock text-primary-blue"></i>
+                        <span>Présences</span>
+                    </a>
+                    
+                    <a href="communication.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-comments text-primary-blue"></i>
+                        <span>Communication</span>
+                    </a>
+                    
+                    <a href="rapports.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-chart-bar text-primary-blue"></i>
+                        <span>Rapports</span>
+                    </a>
+                    
+                    <a href="parametres.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-cog text-primary-blue"></i>
+                        <span>Paramètres</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenu principal - Gestion des Enseignants -->
+        <div class="flex-1 p-6">
+            <!-- En-tête -->
+            <div class="mb-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold text-primary-black">Gestion des Enseignants & Employés</h1>
+                        <p class="text-gray-600 mt-2">Gérez le personnel de toutes vos écoles</p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button onclick="showAddTeacherModal()" class="bg-primary-yellow text-white px-6 py-3 rounded-lg hover:opacity-90 flex items-center space-x-2">
+                            <i class="fas fa-plus"></i>
+                            <span>Ajouter Enseignant</span>
+                        </button>
+                        <button onclick="showImportModal()" class="bg-primary-blue text-white px-6 py-3 rounded-lg hover:opacity-90 flex items-center space-x-2">
+                            <i class="fas fa-upload"></i>
+                            <span>Import Excel</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistiques -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-primary-blue">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Total Enseignants</p>
+                            <p class="text-3xl font-bold text-primary-blue">184</p>
+                        </div>
+                        <i class="fas fa-chalkboard-teacher text-primary-blue text-2xl"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-primary-yellow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Personnel Admin</p>
+                            <p class="text-3xl font-bold text-primary-yellow">32</p>
+                        </div>
+                        <i class="fas fa-users-cog text-primary-yellow text-2xl"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Présents Aujourd'hui</p>
+                            <p class="text-3xl font-bold text-green-500">95%</p>
+                        </div>
+                        <i class="fas fa-check-circle text-green-500 text-2xl"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-red-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">En Formation</p>
+                            <p class="text-3xl font-bold text-red-500">12</p>
+                        </div>
+                        <i class="fas fa-graduation-cap text-red-500 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtres et recherche -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex flex-wrap gap-4 items-center">
+                    <div class="flex-1 min-w-64">
+                        <input type="text" placeholder="Rechercher un enseignant..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                    </div>
+                    <select class="px-4 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                        <option>Toutes les écoles</option>
+                        <option>École Les Palmiers</option>
+                        <option>Collège Excellence</option>
+                        <option>Lycée Moderne</option>
+                        <option>École Bilingue Avenir</option>
+                    </select>
+                    <select class="px-4 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                        <option>Toutes les matières</option>
+                        <option>Mathématiques</option>
+                        <option>Français</option>
+                        <option>Sciences</option>
+                        <option>Histoire-Géographie</option>
+                        <option>Anglais</option>
+                    </select>
+                    <select class="px-4 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                        <option>Tous les statuts</option>
+                        <option>Actif</option>
+                        <option>En congé</option>
+                        <option>Formation</option>
+                    </select>
+                    <button class="bg-primary-blue text-white px-4 py-2 rounded-lg hover:opacity-90">
+                        <i class="fas fa-search mr-2"></i>Filtrer
+                    </button>
+                </div>
+            </div>
+
+            <!-- Liste des enseignants -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-primary-black">Liste des Enseignants</h3>
+                        <div class="flex space-x-2">
+                            <button onclick="exportTeachers()" class="bg-primary-yellow text-white px-4 py-2 rounded-lg hover:opacity-90 text-sm">
+                                <i class="fas fa-download mr-2"></i>Exporter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="text-left py-3 px-6 font-semibold text-primary-black">Enseignant</th>
+                                <th class="text-left py-3 px-6 font-semibold text-primary-black">École</th>
+                                <th class="text-left py-3 px-6 font-semibold text-primary-black">Matière/Poste</th>
+                                <th class="text-left py-3 px-6 font-semibold text-primary-black">Classes</th>
+                                <th class="text-left py-3 px-6 font-semibold text-primary-black">Contact</th>
+                                <th class="text-left py-3 px-6 font-semibold text-primary-black">Statut</th>
+                                <th class="text-left py-3 px-6 font-semibold text-primary-black">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr class="hover:bg-gray-50">
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center space-x-3">
+                                        <img src="/placeholder.svg?height=40&width=40" alt="Prof" class="w-10 h-10 rounded-full border-2 border-primary-blue">
+                                        <div>
+                                            <p class="font-medium text-primary-black">Mme Fatou Diop</p>
+                                            <p class="text-sm text-gray-600">ID: ENS001</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="text-sm">École Les Palmiers</span>
+                                    <p class="text-xs text-gray-500">Dakar</p>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">Mathématiques</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="text-sm">
+                                        <span class="bg-gray-100 px-2 py-1 rounded text-xs mr-1">CM1 A</span>
+                                        <span class="bg-gray-100 px-2 py-1 rounded text-xs">CM2 B</span>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <p class="text-sm">77 123 45 67</p>
+                                    <p class="text-xs text-gray-600">fatou.diop@email.com</p>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Actif</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="flex space-x-2">
+                                        <button onclick="showTeacherProfile('ENS001')" class="bg-primary-blue text-white px-3 py-1 rounded text-xs hover:opacity-90">
+                                            Profil
+                                        </button>
+                                        <button onclick="editTeacher('ENS001')" class="bg-primary-yellow text-white px-3 py-1 rounded text-xs hover:opacity-90">
+                                            Modifier
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr class="hover:bg-gray-50">
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center space-x-3">
+                                        <img src="/placeholder.svg?height=40&width=40" alt="Prof" class="w-10 h-10 rounded-full border-2 border-primary-yellow">
+                                        <div>
+                                            <p class="font-medium text-primary-black">M. Mamadou Sy</p>
+                                            <p class="text-sm text-gray-600">ID: ENS002</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="text-sm">Collège Excellence</span>
+                                    <p class="text-xs text-gray-500">Thiès</p>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Sciences Physiques</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="text-sm">
+                                        <span class="bg-gray-100 px-2 py-1 rounded text-xs mr-1">3ème A</span>
+                                        <span class="bg-gray-100 px-2 py-1 rounded text-xs">3ème B</span>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <p class="text-sm">77 987 65 43</p>
+                                    <p class="text-xs text-gray-600">mamadou.sy@email.com</p>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Actif</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="flex space-x-2">
+                                        <button onclick="showTeacherProfile('ENS002')" class="bg-primary-blue text-white px-3 py-1 rounded text-xs hover:opacity-90">
+                                            Profil
+                                        </button>
+                                        <button onclick="editTeacher('ENS002')" class="bg-primary-yellow text-white px-3 py-1 rounded text-xs hover:opacity-90">
+                                            Modifier
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr class="hover:bg-gray-50">
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center space-x-3">
+                                        <img src="/placeholder.svg?height=40&width=40" alt="Prof" class="w-10 h-10 rounded-full border-2 border-primary-blue">
+                                        <div>
+                                            <p class="font-medium text-primary-black">Mme Aminata Kane</p>
+                                            <p class="text-sm text-gray-600">ID: ENS003</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="text-sm">Lycée Moderne</span>
+                                    <p class="text-xs text-gray-500">Mbour</p>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs">Français</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="text-sm">
+                                        <span class="bg-gray-100 px-2 py-1 rounded text-xs mr-1">1ère L</span>
+                                        <span class="bg-gray-100 px-2 py-1 rounded text-xs">Tle L</span>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <p class="text-sm">77 555 88 99</p>
+                                    <p class="text-xs text-gray-600">aminata.kane@email.com</p>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">Formation</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="flex space-x-2">
+                                        <button onclick="showTeacherProfile('ENS003')" class="bg-primary-blue text-white px-3 py-1 rounded text-xs hover:opacity-90">
+                                            Profil
+                                        </button>
+                                        <button onclick="editTeacher('ENS003')" class="bg-primary-yellow text-white px-3 py-1 rounded text-xs hover:opacity-90">
+                                            Modifier
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr class="hover:bg-gray-50">
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center space-x-3">
+                                        <img src="/placeholder.svg?height=40&width=40" alt="Prof" class="w-10 h-10 rounded-full border-2 border-primary-yellow">
+                                        <div>
+                                            <p class="font-medium text-primary-black">M. Ibrahima Sarr</p>
+                                            <p class="text-sm text-gray-600">ID: ENS004</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="text-sm">École Bilingue Avenir</span>
+                                    <p class="text-xs text-gray-500">Dakar</p>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">Anglais</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="text-sm">
+                                        <span class="bg-gray-100 px-2 py-1 rounded text-xs mr-1">CE2</span>
+                                        <span class="bg-gray-100 px-2 py-1 rounded text-xs">CM1</span>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <p class="text-sm">77 444 22 11</p>
+                                    <p class="text-xs text-gray-600">ibrahima.sarr@email.com</p>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Actif</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="flex space-x-2">
+                                        <button onclick="showTeacherProfile('ENS004')" class="bg-primary-blue text-white px-3 py-1 rounded text-xs hover:opacity-90">
+                                            Profil
+                                        </button>
+                                        <button onclick="editTeacher('ENS004')" class="bg-primary-yellow text-white px-3 py-1 rounded text-xs hover:opacity-90">
+                                            Modifier
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="px-6 py-4 border-t border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <p class="text-sm text-gray-600">Affichage de 1 à 10 sur 184 enseignants</p>
+                        <div class="flex space-x-2">
+                            <button class="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50">Précédent</button>
+                            <button class="px-3 py-1 bg-primary-blue text-white rounded text-sm">1</button>
+                            <button class="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50">2</button>
+                            <button class="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50">3</button>
+                            <button class="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50">Suivant</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+</html>

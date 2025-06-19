@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Parent - MySchool 221</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#407CEE',
+                        'secondary': '#F7B000',
+                        'dark': '#000000'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-primary">MySchool 221</h1>
+                    <span class="ml-3 text-gray-500">|</span>
+                    <span class="ml-3 text-gray-700">Espace Parent</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <button id="notificationBtn" class="p-2 text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span id="notificationBadge" class="absolute -top-1 -right-1 bg-secondary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+                        </button>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <img class="h-8 w-8 rounded-full" src="https://img.freepik.com/free-psd/portrait-woman-wearing-hijab_23-2150945115.jpg?uid=R78154550&ga=GA1.1.2054844452.1748880775&semt=ais_items_boosted&w=740" alt="Avatar">
+                        <span class="text-gray-700 font-medium">Aminata Mbaye</span>
+                        <button id="profileBtn" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Welcome Section -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Bonjour Aminata 👋</h2>
+            <p class="text-gray-600">Voici un aperçu de l'activité scolaire de vos enfants</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-primary">
+                <div class="flex items-center">
+                    <div class="p-2 bg-primary bg-opacity-10 rounded-lg">
+                        <i class="fas fa-user-graduate text-primary text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Enfants inscrits</p>
+                        <p class="text-2xl font-bold text-gray-900">2</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-green-500">
+                <div class="flex items-center">
+                    <div class="p-2 bg-green-100 rounded-lg">
+                        <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Présences cette semaine</p>
+                        <p class="text-2xl font-bold text-gray-900">95%</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-secondary">
+                <div class="flex items-center">
+                    <div class="p-2 bg-secondary bg-opacity-10 rounded-lg">
+                        <i class="fas fa-star text-secondary text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Moyenne générale</p>
+                        <p class="text-2xl font-bold text-gray-900">14.5/20</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-red-500">
+                <div class="flex items-center">
+                    <div class="p-2 bg-red-100 rounded-lg">
+                        <i class="fas fa-exclamation-triangle text-red-500 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Notifications</p>
+                        <p class="text-2xl font-bold text-gray-900">3</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Children Overview -->
+                <div class="bg-white rounded-lg shadow-sm">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">Mes Enfants</h3>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <!-- Child 1 -->
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div class="flex items-center space-x-4">
+                                <img class="h-12 w-12 rounded-full" src="https://img.freepik.com/free-photo/waist-up-portrait-smiling-contented-bespectacled-kid-standing-with-his-arms-folded-against-white-background_259150-59787.jpg?uid=R78154550&ga=GA1.1.2054844452.1748880775&semt=ais_items_boosted&w=740" alt="Moussa">
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Moussa Diallo</h4>
+                                    <p class="text-sm text-gray-600">Classe de 3ème A</p>
+                                    <p class="text-sm text-gray-500">École Sainte Marie</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-bold text-green-600">15.2/20</p>
+                                <p class="text-sm text-gray-500">Moyenne générale</p>
+                            </div>
+                            <button onclick="openChildDetails('Moussa')" class="ml-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors">
+                                Voir détails
+                            </button>
+                        </div>
+
+                        <!-- Child 2 -->
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div class="flex items-center space-x-4">
+                                <img class="h-12 w-12 rounded-full" src="https://img.freepik.com/free-photo/happy-girl-with-adorable-hair-smiling_23-2149352366.jpg?uid=R78154550&ga=GA1.1.2054844452.1748880775&semt=ais_items_boosted&w=740" alt="Fatou">
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Fatou Diallo</h4>
+                                    <p class="text-sm text-gray-600">Classe de CE2 B</p>
+                                    <p class="text-sm text-gray-500">École Sainte Marie</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-bold text-secondary">13.8/20</p>
+                                <p class="text-sm text-gray-500">Moyenne générale</p>
+                            </div>
+                            <button onclick="openChildDetails('Fatou')" class="ml-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors">
+                                Voir détails
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activities -->
+                <div class="bg-white rounded-lg shadow-sm">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">Activités Récentes</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="p-2 bg-green-100 rounded-full">
+                                    <i class="fas fa-check text-green-600 text-sm"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-gray-900">Nouvelle note en Mathématiques</p>
+                                    <p class="text-sm text-gray-600">Moussa a obtenu 16/20 au contrôle de géométrie</p>
+                                    <p class="text-xs text-gray-500">Il y a 2 heures</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-3">
+                                <div class="p-2 bg-secondary bg-opacity-20 rounded-full">
+                                    <i class="fas fa-calendar text-secondary text-sm"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-gray-900">Changement d'emploi du temps</p>
+                                    <p class="text-sm text-gray-600">Le cours de Sciences de demain est reporté à jeudi</p>
+                                    <p class="text-xs text-gray-500">Il y a 4 heures</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-3">
+                                <div class="p-2 bg-red-100 rounded-full">
+                                    <i class="fas fa-exclamation text-red-600 text-sm"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-gray-900">Absence signalée</p>
+                                    <p class="text-sm text-gray-600">Fatou était absente ce matin en Français</p>
+                                    <p class="text-xs text-gray-500">Il y a 6 heures</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-3">
+                                <div class="p-2 bg-blue-100 rounded-full">
+                                    <i class="fas fa-book text-blue-600 text-sm"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-gray-900">Nouveau devoir assigné</p>
+                                    <p class="text-sm text-gray-600">Rédaction en Français pour Fatou - À rendre vendredi</p>
+                                    <p class="text-xs text-gray-500">Hier</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="space-y-6">
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg shadow-sm">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">Actions Rapides</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <button onclick="openPayments()" class="flex flex-col items-center p-4 bg-primary bg-opacity-10 rounded-lg hover:bg-opacity-20 transition-colors">
+                                <i class="fas fa-credit-card text-primary text-2xl mb-2"></i>
+                                <span class="text-sm font-medium text-primary">Paiements</span>
+                            </button>
+
+                            <button onclick="openJustificatifs()" class="flex flex-col items-center p-4 bg-secondary bg-opacity-10 rounded-lg hover:bg-opacity-20 transition-colors">
+                                <i class="fas fa-file-medical text-secondary text-2xl mb-2"></i>
+                                <span class="text-sm font-medium text-secondary">Justificatifs</span>
+                            </button>
+
+                            <button onclick="openMessages()" class="flex flex-col items-center p-4 bg-green-100 rounded-lg hover:bg-green-200 transition-colors">
+                                <i class="fas fa-comments text-green-600 text-2xl mb-2"></i>
+                                <span class="text-sm font-medium text-green-600">Messages</span>
+                            </button>
+
+                            <button onclick="openBulletins()" class="flex flex-col items-center p-4 bg-purple-100 rounded-lg hover:bg-purple-200 transition-colors">
+                                <i class="fas fa-chart-line text-purple-600 text-2xl mb-2"></i>
+                                <span class="text-sm font-medium text-purple-600">Bulletins</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Status -->
+                <div class="bg-white rounded-lg shadow-sm">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">État des Paiements</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium text-gray-900">Frais de scolarité - Janvier</p>
+                                    <p class="text-sm text-gray-600">Moussa Diallo</p>
+                                </div>
+                                <span class="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">Payé</span>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium text-gray-900">Frais de scolarité - Janvier</p>
+                                    <p class="text-sm text-gray-600">Fatou Diallo</p>
+                                </div>
+                                <span class="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">Payé</span>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium text-gray-900">Frais d'activités - Février</p>
+                                    <p class="text-sm text-gray-600">Les deux enfants</p>
+                                </div>
+                                <span class="px-3 py-1 bg-red-100 text-red-800 text-sm font-medium rounded-full">En attente</span>
+                            </div>
+                        </div>
+
+                        <button onclick="openPaymentForm()" class="w-full mt-4 px-4 py-2 bg-secondary text-white rounded-lg hover:bg-yellow-500 transition-colors">
+                            Effectuer un paiement
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Upcoming Events -->
+                <div class="bg-white rounded-lg shadow-sm">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">Événements à venir</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="bg-primary text-white text-center rounded-lg p-2 min-w-[50px]">
+                                    <p class="text-xs font-medium">FÉV</p>
+                                    <p class="text-lg font-bold">15</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Réunion parents-professeurs</p>
+                                    <p class="text-sm text-gray-600">Classe de 3ème A</p>
+                                    <p class="text-xs text-gray-500">14h30 - 16h30</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-3">
+                                <div class="bg-secondary text-white text-center rounded-lg p-2 min-w-[50px]">
+                                    <p class="text-xs font-medium">FÉV</p>
+                                    <p class="text-lg font-bold">20</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Conseil de classe</p>
+                                    <p class="text-sm text-gray-600">CE2 B</p>
+                                    <p class="text-xs text-gray-500">16h00 - 18h00</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-3">
+                                <div class="bg-green-500 text-white text-center rounded-lg p-2 min-w-[50px]">
+                                    <p class="text-xs font-medium">MAR</p>
+                                    <p class="text-lg font-bold">05</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Vacances de Korité</p>
+                                    <p class="text-sm text-gray-600">Toutes les classes</p>
+                                    <p class="text-xs text-gray-500">1 semaine</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Bot Button -->
+    <div class="fixed bottom-6 right-6">
+        <button onclick="openChatBot()" class="bg-primary text-white p-4 rounded-full shadow-lg hover:bg-blue-600 transition-colors">
+            <i class="fas fa-comments text-xl"></i>
+        </button>
+    </div>
+
+    <!-- Modal Overlay -->
+    <div id="modalOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div id="modalContent" class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                <!-- Modal content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Dropdown -->
+    <div id="notificationDropdown" class="absolute top-16 right-4 bg-white rounded-lg shadow-lg border border-gray-200 w-80 z-40 hidden">
+        <div class="p-4 border-b border-gray-200">
+            <h3 class="font-semibold text-gray-900">Notifications</h3>
+        </div>
+        <div class="max-h-96 overflow-y-auto">
+            <div class="p-4 border-b border-gray-100 hover:bg-gray-50">
+                <div class="flex items-start space-x-3">
+                    <div class="w-2 h-2 bg-red-500 rounded-full mt-2"></div>
+                    <div>
+                        <p class="font-medium text-gray-900 text-sm">Nouveau message de Mme Sow</p>
+                        <p class="text-gray-600 text-sm">Concernant l'absence de Fatou en classe</p>
+                        <p class="text-gray-400 text-xs">Il y a 1 heure</p>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-b border-gray-100 hover:bg-gray-50">
+                <div class="flex items-start space-x-3">
+                    <div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                    <div>
+                        <p class="font-medium text-gray-900 text-sm">Rappel de paiement</p>
+                        <p class="text-gray-600 text-sm">Frais d'activités à régler avant le 28 février</p>
+                        <p class="text-gray-400 text-xs">Il y a 2 heures</p>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 hover:bg-gray-50">
+                <div class="flex items-start space-x-3">
+                    <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                    <div>
+                        <p class="font-medium text-gray-900 text-sm">Résultat du contrôle</p>
+                        <p class="text-gray-600 text-sm">Moussa - Mathématiques: 16/20</p>
+                        <p class="text-gray-400 text-xs">Il y a 3 heures</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Dropdown -->
+    <div id="profileDropdown" class="absolute top-16 right-4 bg-white rounded-lg shadow-lg border border-gray-200 w-48 z-40 hidden">
+        <div class="p-2">
+            <button class="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg flex items-center space-x-2">
+                <i class="fas fa-user text-gray-500"></i>
+                <span>Mon profil</span>
+            </button>
+            <button class="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg flex items-center space-x-2">
+                <i class="fas fa-cog text-gray-500"></i>
+                <span>Paramètres</span>
+            </button>
+            <button class="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg flex items-center space-x-2">
+                <i class="fas fa-question-circle text-gray-500"></i>
+                <span>Aide</span>
+            </button>
+            <hr class="my-2">
+            <button class="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg flex items-center space-x-2 text-red-600">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Déconnexion</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentModal = null;
+
+        // Modal functions
+        function openModal(content) {
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('modalOverlay').classList.remove('hidden');
+            currentModal = 'open';
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.add('hidden');
+            currentModal = null;
+        }
+
+        // Child details modal
+        function openChildDetails(childName) {
+            const childData = {
+                'Moussa': {
+                    name: 'Moussa Diallo',
+                    class: '3ème A',
+                    average: '15.2/20',
+                    attendance: '98%',
+                    subjects: [
+                        { name: 'Mathématiques', grade: '16.5/20', teacher: 'M. Ndiaye' },
+                        { name: 'Français', grade: '14.8/20', teacher: 'Mme Sow' },
+                        { name: 'Sciences Physiques', grade: '15.2/20', teacher: 'M. Diop' },
+                        { name: 'Histoire-Géo', grade: '14.0/20', teacher: 'Mme Fall' },
+                        { name: 'Anglais', grade: '16.0/20', teacher: 'Mr. Johnson' }
+                    ],
+                    absences: [
+                        { date: '12/02/2025', subject: 'Mathématiques', justified: true },
+                        { date: '08/02/2025', subject: 'Sport', justified: false }
+                    ]
+                },
+                'Fatou': {
+                    name: 'Fatou Diallo',
+                    class: 'CE2 B',
+                    average: '13.8/20',
+                    attendance: '92%',
+                    subjects: [
+                        { name: 'Français', grade: '14.2/20', teacher: 'Mme Ba' },
+                        { name: 'Mathématiques', grade: '13.5/20', teacher: 'M. Sarr' },
+                        { name: 'Sciences', grade: '14.0/20', teacher: 'Mme Cissé' },
+                        { name: 'Dessin', grade: '15.5/20', teacher: 'M. Ly' },
+                        { name: 'Sport', grade: '12.8/20', teacher: 'M. Diouf' }
+                    ],
+                    absences: [
+                        { date: '14/02/2025', subject: 'Français', justified: true },
+                        { date: '10/02/2025', subject: 'Mathématiques', justified: true },
+                        { date: '05/02/2025', subject: 'Sport', justified: false }
+                    ]
+                }
+            };
+
+            const child = childData[childName];
+            const content = `
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">Détails de ${child.name}</h2>
+                        <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Summary Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <p class="text-sm text-blue-600 font-medium">Classe</p>
+                            <p class="text-lg font-bold text-blue-800">${child.class}</p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <p class="text-sm text-green-600 font-medium">Moyenne générale</p>
+                            <p class="text-lg font-bold text-green-800">${child.average}</p>
+                        </div>
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <p class="text-sm text-yellow-600 font-medium">Taux de présence</p>
+                            <p class="text-lg font-bold text-yellow-800">${child.attendance}</p>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="border-b border-gray-200 mb-6">
+                        <nav class="-mb-px flex space-x-8">
+                            <button onclick="showTab('grades')" class="tab-btn active border-b-2 border-primary text-primary py-2 px-1 text-sm font-medium">
+                                Notes par matière
+                            </button>
+                            <button onclick="showTab('absences')" class="tab-btn border-b-2 border-transparent text-gray-500 hover:text-gray-700 py-2 px-1 text-sm font-medium">
+                                Absences
+                            </button>
+                            <button onclick="showTab('behavior')" class="tab-btn border-b-2 border-transparent text-gray-500 hover:text-gray-700 py-2 px-1 text-sm font-medium">
+                                Comportement
+                            </button>
+                        </nav>
+                    </div>
+
+                    <!-- Tab Content -->
+                    <div id="gradesTab" class="tab-content">
+                        <div class="space-y-3">
+                            ${child.subjects.map(subject => `
+                                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <p class="font-medium text-gray-900">${subject.name}</p>
+                                        <p class="text-sm text-gray-600">${subject.teacher}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-bold text-lg ${parseFloat(subject.grade) >= 15 ? 'text-green-600' : parseFloat(subject.grade) >= 12 ? 'text-yellow-600' : 'text-red-600'}">${subject.grade}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div id="absencesTab" class="tab-content hidden">
+                        <div class="space-y-3">
+                            ${child.absences.map(absence => `
+                                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <p class="font-medium text-gray-900">${absence.date}</p>
+                                        <p class="text-sm text-gray-600">${absence.subject}</p>
+                                    </div>
+                                    <span class="px-3 py-1 text-sm font-medium rounded-full ${absence.justified ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                        ${absence.justified ? 'Justifiée' : 'Non justifiée'}
+                                    </span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div id="behaviorTab" class="tab-content hidden">
+                        <div class="space-y-4">
+                            <div class="bg-green-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-green-800 mb-2">Points positifs</h4>
+                                <ul class="text-sm text-green-700 space-y-1">
+                                    <li>• Participation active en classe</li>
+                                    <li>• Travail régulier et soigné</li>
+                                    <li>• Bonne relation avec les camarades</li>
+                                </ul>
+                            </div>
+                            <div class="bg-yellow-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-yellow-800 mb-2">Points à améliorer</h4>
+                                <ul class="text-sm text-yellow-700 space-y-1">
+                                    <li>• Ponctualité à améliorer</li>
+                                    <li>• Concentration en fin de journée</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            openModal(content);
+        }
+
+        // Payments modal
+        function openPayments() {
+            const content = `
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">Historique des Paiements</h2>
+                        <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+
+                    <!-- Payment Summary -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <p class="text-sm text-green-600 font-medium">Total payé</p>
+                            <p class="text-2xl font-bold text-green-800">450.000 FCFA</p>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-lg">
+                            <p class="text-sm text-red-600 font-medium">En attente</p>
+                            <p class="text-2xl font-bold text-red-800">75.000 FCFA</p>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <p class="text-sm text-blue-600 font-medium">Prochaine échéance</p>
+                            <p class="text-lg font-bold text-blue-800">28 Février</p>
+                        </div>
+                    </div>
+
+                    <!-- Payment History -->
+                    <div class="bg-white border rounded-lg overflow-hidden">
+                        <div class="px-6 py-4 bg-gray-50 border-b">
+                            <h3 class="font-semibold text-gray-900">Historique des paiements</h3>
+                        </div>
+                        <div class="divide-y divide-gray-200">
+                            <div class="px-6 py-4 flex justify-between items-center">
+                                <div>
+                                    <p class="font-medium text-gray-900">Frais de scolarité - Janvier 2025</p>
+                                    <p class="text-sm text-gray-600">Moussa Diallo</p>
+                                    <p class="text-xs text-gray-500">Payé le 15/01/2025</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-gray-900">125.000 FCFA</p>
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">Payé</span>
+                                </div>
+                            </div>
+                            <div class="px-6 py-4 flex justify-between items-center">
+                                <div>
+                                    <p class="font-medium text-gray-900">Frais de scolarité - Janvier 2025</p>
+                                    <p class="text-sm text-gray-600">Fatou Diallo</p>
+                                    <p class="text-xs text-gray-500">Payé le 15/01/2025</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-gray-900">100.000 FCFA</p>
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">Payé</span>
+                                </div>
+                            </div>
+                            <div class="px-6 py-4 flex justify-between items-center">
+                                <div>
+                                    <p class="font-medium text-gray-900">Frais d'activités - Février 2025</p>
+                                    <p class="text-sm text-gray-600">Les deux enfants</p>
+                                    <p class="text-xs text-gray-500">Échéance: 28/02/2025</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-gray-900">75.000 FCFA</p>
+                                    <span class="px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded-full">En attente</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex space-x-3">
+                        <button onclick="openPaymentForm()" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600">
+                            Effectuer un paiement
+                        </button>
+                        <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+                            Télécharger reçus
+                        </button>
+                    </div>
+                </div>
+            `;
+            openModal(content);
+        }
+
+        // Payment form modal
+        function openPaymentForm() {
+            const content = `
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">Effectuer un Paiement</h2>
+                        <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+
+                    <form class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Type de frais</label>
+                            <select class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                                <option>Frais d'activités - Février 2025 (75.000 FCFA)</option>
+                                <option>Frais de scolarité - Mars 2025</option>
+                                <option>Frais de transport</option>
+                                <option>Frais de cantine</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Enfant concerné</label>
+                            <select class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                                <option>Les deux enfants</option>
+                                <option>Moussa Diallo</option>
+                                <option>Fatou Diallo</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Montant</label>
+                            <input type="text" value="75.000 FCFA" class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50" readonly>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Mode de paiement</label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                                    <input type="radio" name="payment" value="mobile" class="mr-3">
+                                    <div>
+                                        <p class="font-medium">Mobile Money</p>
+                                        <p class="text-sm text-gray-600">Orange Money, Wave</p>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                                    <input type="radio" name="payment" value="bank" class="mr-3">
+                                    <div>
+                                        <p class="font-medium">Virement bancaire</p>
+                                        <p class="text-sm text-gray-600">Compte école</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="border-t pt-6">
+                            <div class="flex justify-end space-x-3">
+                                <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+                                    Annuler
+                                </button>
+                                <button type="submit" onclick="processPayment()" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600">
+                                    Continuer le paiement
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            `;
+            openModal(content);
+        }
+
+        // Messages modal
+        function openMessages() {
+            const content = `
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">Messages</h2>
+                        <div class="flex space-x-2">
+                            <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600">
+                                <i class="fas fa-plus mr-2"></i>Nouveau message
+                            </button>
+                            <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Message List -->
+                    <div class="space-y-4">
+                        <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex items-center space-x-3">
+                                    <img class="h-10 w-10 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium" src="https://via.placeholder.com/40/407CEE/FFFFFF?text=MS" alt="Mme Sow">
+                                    <div>
+                                        <p class="font-medium text-gray-900">Mme Sow</p>
+                                        <p class="text-sm text-gray-600">Professeure de Français - CE2 B</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xs text-gray-500">Il y a 1 heure</p>
+                                    <span class="inline-block w-2 h-2 bg-red-500 rounded-full"></span>
+                                </div>
+                            </div>
+                            <p class="text-gray-700">Concernant l'absence de Fatou ce matin en classe de français...</p>
+                        </div>
+
+                        <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex items-center space-x-3">
+                                    <img class="h-10 w-10 rounded-full bg-secondary text-white flex items-center justify-center text-sm font-medium" src="https://via.placeholder.com/40/F7B000/FFFFFF?text=MN" alt="M. Ndiaye">
+                                    <div>
+                                        <p class="font-medium text-gray-900">M. Ndiaye</p>
+                                        <p class="text-sm text-gray-600">Professeur de Mathématiques - 3ème A</p>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500">Hier</p>
+                            </div>
+                            <p class="text-gray-700">Félicitations ! Moussa a obtenu un excellent résultat en géométrie...</p>
+                        </div>
+
+                        <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex items-center space-x-3">
+                                    <img class="h-10 w-10 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-medium" src="https://via.placeholder.com/40/10B981/FFFFFF?text=AD" alt="Administration">
+                                    <div>
+                                        <p class="font-medium text-gray-900">Administration</p>
+                                        <p class="text-sm text-gray-600">École Sainte Marie</p>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500">Il y a 2 jours</p>
+                            </div>
+                            <p class="text-gray-700">Rappel : Réunion parents-professeurs le 15 février à 14h30...</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            openModal(content);
+        }
+
+        // Justificatifs modal
+        function openJustificatifs() {
+            const content = `
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">Justificatifs d'Absence</h2>
+                        <div class="flex space-x-2">
+                            <button class="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-yellow-500">
+                                <i class="fas fa-plus mr-2"></i>Ajouter justificatif
+                            </button>
+                            <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Justificatifs récents -->
+                    <div class="space-y-4">
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-medium text-gray-900">Consultation médicale</h3>
+                                    <p class="text-sm text-gray-600">Fatou Diallo - 14/02/2025</p>
+                                    <p class="text-sm text-gray-500">Cours de Français (8h-9h)</p>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">Approuvé</span>
+                                    <button class="text-blue-600 hover:text-blue-800">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-medium text-gray-900">Rendez-vous médical</h3>
+                                    <p class="text-sm text-gray-600">Moussa Diallo - 12/02/2025</p>
+                                    <p class="text-sm text-gray-500">Cours de Mathématiques (10h-11h)</p>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full">En attente</span>
+                                    <button class="text-blue-600 hover:text-blue-800">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-medium text-gray-900">Événement familial</h3>
+                                    <p class="text-sm text-gray-600">Fatou Diallo - 10/02/2025</p>
+                                    <p class="text-sm text-gray-500">Cours de Mathématiques (14h-15h)</p>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">Approuvé</span>
+                                    <button class="text-blue-600 hover:text-blue-800">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            openModal(content);
+        }
+
+        // Bulletins modal
+        function openBulletins() {
+            const content = `
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">Bulletins de Notes</h2>
+                        <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+
+                    <!-- Filter -->
+                    <div class="mb-6">
+                        <select class="border border-gray-300 rounded-lg px-3 py-2">
+                            <option>Tous les enfants</option>
+                            <option>Moussa Diallo</option>
+                            <option>Fatou Diallo</option>
+                        </select>
+                    </div>
+
+                    <!-- Bulletins List -->
+                    <div class="space-y-4">
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h3 class="font-medium text-gray-900">Bulletin du 1er Trimestre 2024-2025</h3>
+                                    <p class="text-sm text-gray-600">Moussa Diallo - 3ème A</p>
+                                    <p class="text-sm text-gray-500">Moyenne générale: 15.2/20</p>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">Excellent</span>
+                                    <button class="px-3 py-1 bg-primary text-white rounded text-sm hover:bg-blue-600">
+                                        <i class="fas fa-download mr-1"></i>Télécharger
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h3 class="font-medium text-gray-900">Bulletin du 1er Trimestre 2024-2025</h3>
+                                    <p class="text-sm text-gray-600">Fatou Diallo - CE2 B</p>
+                                    <p class="text-sm text-gray-500">Moyenne générale: 13.8/20</p>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full">Bien</span>
+                                    <button class="px-3 py-1 bg-primary text-white rounded text-sm hover:bg-blue-600">
+                                        <i class="fas fa-download mr-1"></i>Télécharger
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            openModal(content);
+        }
+
+        // ChatBot modal
+        function openChatBot() {
+            const content = `
+                <div class="p-6 h-96">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold text-gray-900">Assistant MySchool</h2>
+                        <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="h-64 bg-gray-50 rounded-lg p-4 mb-4 overflow-y-auto">
+                        <div class="space-y-3">
+                            <div class="flex items-start space-x-2">
+                                <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                                    <i class="fas fa-robot text-white text-sm"></i>
+                                </div>
+                                <div class="bg-white rounded-lg p-3 max-w-xs">
+                                    <p class="text-sm">Bonjour ! Je suis votre assistant virtuel. Comment puis-je vous aider aujourd'hui ?</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-2">
+                        <input type="text" placeholder="Tapez votre message..." class="flex-1 border border-gray-300 rounded-lg px-3 py-2">
+                        <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <p class="text-xs text-gray-500 mb-2">Questions fréquentes :</p>
+                        <div class="flex flex-wrap gap-2">
+                            <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs hover:bg-gray-200">Comment payer les frais ?</button>
+                            <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs hover:bg-gray-200">Justifier une absence</button>
+                            <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs hover:bg-gray-200">Calendrier scolaire</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            openModal(content);
+        }
+
+        // Tab functionality
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'border-primary', 'text-primary');
+                btn.classList.add('border-transparent', 'text-gray-500');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName + 'Tab').classList.remove('hidden');
+            
+            // Activate selected tab button
+            event.target.classList.add('active', 'border-primary', 'text-primary');
+            event.target.classList.remove('border-transparent', 'text-gray-500');
+        }
+
+        // Process payment function
+        function processPayment() {
+            alert('Redirection vers la plateforme de paiement...');
+            closeModal();
+        }
+
+        // Main event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Notification dropdown
+            document.getElementById('notificationBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                const dropdown = document.getElementById('notificationDropdown');
+                dropdown.classList.toggle('hidden');
+                document.getElementById('profileDropdown').classList.add('hidden');
+            });
+
+            // Profile dropdown
+            document.getElementById('profileBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                const dropdown = document.getElementById('profileDropdown');
+                dropdown.classList.toggle('hidden');
+                document.getElementById('notificationDropdown').classList.add('hidden');
+            });
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function() {
+                document.getElementById('notificationDropdown').classList.add('hidden');
+                document.getElementById('profileDropdown').classList.add('hidden');
+            });
+
+            // Close modal when clicking overlay
+            document.getElementById('modalOverlay').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+
+            // Button animations
+            const actionButtons = document.querySelectorAll('button');
+            actionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            });
+
+            // Simulate real-time notifications
+            setInterval(() => {
+                const notificationBadge = document.getElementById('notificationBadge');
+                if (notificationBadge && Math.random() > 0.98) {
+                    const currentCount = parseInt(notificationBadge.textContent);
+                    notificationBadge.textContent = currentCount + 1;
+                    notificationBadge.classList.add('animate-pulse');
+                    setTimeout(() => {
+                        notificationBadge.classList.remove('animate-pulse');
+                    }, 2000);
+                }
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

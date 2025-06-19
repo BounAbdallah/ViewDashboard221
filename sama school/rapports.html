@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapports - MySchool 221</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-graduation-cap"></i> MySchool 221</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="index.html"><i class="fas fa-home"></i> Tableau de bord</a>
+                <a href="ecoles.html"><i class="fas fa-school"></i> Écoles</a>
+                <a href="enseignants.html"><i class="fas fa-chalkboard-teacher"></i> Enseignants</a>
+                <a href="eleves.html"><i class="fas fa-user-graduate"></i> Élèves</a>
+                <a href="classes.html"><i class="fas fa-users"></i> Classes</a>
+                <a href="emplois-temps.html"><i class="fas fa-calendar-alt"></i> Emplois du temps</a>
+                <a href="notes.html"><i class="fas fa-clipboard-list"></i> Notes</a>
+                <a href="presences.html"><i class="fas fa-user-check"></i> Présences</a>
+                <a href="communication.html"><i class="fas fa-comments"></i> Communication</a>
+                <a href="finances.html"><i class="fas fa-money-bill-wave"></i> Finances</a>
+                <a href="rapports.html" class="active"><i class="fas fa-chart-bar"></i> Rapports</a>
+                <a href="parametres.html"><i class="fas fa-cog"></i> Paramètres</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <h1><i class="fas fa-chart-bar"></i> Rapports et Statistiques</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="generateReport()">
+                        <i class="fas fa-file-pdf"></i> Générer rapport
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportData()">
+                        <i class="fas fa-download"></i> Exporter données
+                    </button>
+                </div>
+            </header>
+
+            <!-- Report Filters -->
+            <div class="filters-section">
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label>Période</label>
+                        <select class="form-control">
+                            <option>Ce mois</option>
+                            <option>Ce trimestre</option>
+                            <option>Cette année</option>
+                            <option>Personnalisé</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>École</label>
+                        <select class="form-control">
+                            <option>Toutes les écoles</option>
+                            <option>École Primaire Centre</option>
+                            <option>Collège Moderne</option>
+                            <option>Lycée Excellence</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Type de rapport</label>
+                        <select class="form-control">
+                            <option>Académique</option>
+                            <option>Financier</option>
+                            <option>Présences</option>
+                            <option>Personnel</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-filter"></i> Appliquer filtres
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="showTab('academique')">
+                    <i class="fas fa-graduation-cap"></i> Académique
+                </button>
+                <button class="tab-btn" onclick="showTab('financier')">
+                    <i class="fas fa-money-bill-wave"></i> Financier
+                </button>
+                <button class="tab-btn" onclick="showTab('presences')">
+                    <i class="fas fa-user-check"></i> Présences
+                </button>
+                <button class="tab-btn" onclick="showTab('personnel')">
+                    <i class="fas fa-users"></i> Personnel
+                </button>
+            </div>
+
+            <!-- Academic Reports Tab -->
+            <div id="academique" class="tab-content active">
+                <div class="reports-grid">
+                    <!-- Performance Overview -->
+                    <div class="report-card">
+                        <div class="report-header">
+                            <h3>Performance Académique</h3>
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                        <div class="report-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">85%</span>
+                                <span class="stat-label">Taux de réussite</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">12.5</span>
+                                <span class="stat-label">Moyenne générale</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Subject Performance -->
+                    <div class="report-card">
+                        <div class="report-header">
+                            <h3>Performance par Matière</h3>
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="subjectChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Class Rankings -->
+                    <div class="report-card full-width">
+                        <div class="report-header">
+                            <h3>Classement des Classes</h3>
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Rang</th>
+                                        <th>Classe</th>
+                                        <th>Moyenne</th>
+                                        <th>Effectif</th>
+                                        <th>Taux de réussite</th>
+                                        <th>Évolution</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="rank gold">1</span></td>
+                                        <td>Terminale S1</td>
+                                        <td>14.2</td>
+                                        <td>28</td>
+                                        <td>92%</td>
+                                        <td><span class="trend up">+2.1%</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="rank silver">2</span></td>
+                                        <td>1ère S2</td>
+                                        <td>13.8</td>
+                                        <td>30</td>
+                                        <td>87%</td>
+                                        <td><span class="trend up">+1.5%</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="rank bronze">3</span></td>
+                                        <td>2nde A</td>
+                                        <td>13.1</td>
+                                        <td>32</td>
+                                        <td>84%</td>
+                                        <td><span class="trend down">-0.8%</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financial Reports Tab -->
+            <div id="financier" class="tab-content">
+                <div class="reports-grid">
+                    <!-- Revenue Overview -->
+                    <div class="report-card">
+                        <div class="report-header">
+                            <h3>Revenus Mensuels</h3>
+                            <i class="fas fa-chart-area"></i>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                        <div class="report-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">2.5M</span>
+                                <span class="stat-label">Revenus totaux</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">+12%</span>
+                                <span class="stat-label">Croissance</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Status -->
+                    <div class="report-card">
+                        <div class="report-header">
+                            <h3>État des Paiements</h3>
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="paymentChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Financial Summary -->
+                    <div class="report-card full-width">
+                        <div class="report-header">
+                            <h3>Résumé Financier</h3>
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <div class="financial-summary">
+                            <div class="summary-row">
+                                <span class="summary-label">Frais de scolarité collectés</span>
+                                <span class="summary-value positive">1,850,000 FCFA</span>
+                            </div>
+                            <div class="summary-row">
+                                <span class="summary-label">Frais en attente</span>
+                                <span class="summary-value warning">320,000 FCFA</span>
+                            </div>
+                            <div class="summary-row">
+                                <span class="summary-label">Frais en retard</span>
+                                <span class="summary-value negative">125,000 FCFA</span>
+                            </div>
+                            <div class="summary-row total">
+                                <span class="summary-label">Total attendu</span>
+                                <span class="summary-value">2,295,000 FCFA</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance Reports Tab -->
+            <div id="presences" class="tab-content">
+                <div class="reports-grid">
+                    <!-- Attendance Rate -->
+                    <div class="report-card">
+                        <div class="report-header">
+                            <h3>Taux de Présence</h3>
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="attendanceChart"></canvas>
+                        </div>
+                        <div class="report-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">92%</span>
+                                <span class="stat-label">Présence moyenne</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">45</span>
+                                <span class="stat-label">Absences ce mois</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Absence Reasons -->
+                    <div class="report-card">
+                        <div class="report-header">
+                            <h3>Motifs d'Absence</h3>
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="absenceChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Attendance Trends -->
+                    <div class="report-card full-width">
+                        <div class="report-header">
+                            <h3>Tendances de Présence</h3>
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="attendanceTrendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Staff Reports Tab -->
+            <div id="personnel" class="tab-content">
+                <div class="reports-grid">
+                    <!-- Staff Distribution -->
+                    <div class="report-card">
+                        <div class="report-header">
+                            <h3>Répartition du Personnel</h3>
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="staffChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Performance Metrics -->
+                    <div class="report-card">
+                        <div class="report-header">
+                            <h3>Indicateurs de Performance</h3>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="performance-metrics">
+                            <div class="metric-item">
+                                <span class="metric-label">Satisfaction élèves</span>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: 88%"></div>
+                                </div>
+                                <span class="metric-value">88%</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">Ponctualité</span>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: 95%"></div>
+                                </div>
+                                <span class="metric-value">95%</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">Formation continue</span>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: 72%"></div>
+                                </div>
+                                <span class="metric-value">72%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Staff Summary -->
+                    <div class="report-card full-width">
+                        <div class="report-header">
+                            <h3>Résumé du Personnel</h3>
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="staff-summary-grid">
+                            <div class="summary-card">
+                                <h4>Enseignants</h4>
+                                <div class="summary-number">45</div>
+                                <div class="summary-detail">+3 ce mois</div>
+                            </div>
+                            <div class="summary-card">
+                                <h4>Personnel Admin</h4>
+                                <div class="summary-number">12</div>
+                                <div class="summary-detail">Stable</div>
+                            </div>
+                            <div class="summary-card">
+                                <h4>Personnel Technique</h4>
+                                <div class="summary-number">8</div>
+                                <div class="summary-detail">-1 ce mois</div>
+                            </div>
+                            <div class="summary-card">
+                                <h4>Taux de rétention</h4>
+                                <div class="summary-number">94%</div>
+                                <div class="summary-detail">+2% vs année dernière</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="scripts.js"></script>
+    <script>
+        // Initialize charts when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+        });
+
+        function showTab(tabName) {
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            tabBtns.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function initializeCharts() {
+            // Performance Chart
+            const performanceCtx = document.getElementById('performanceChart');
+            if (performanceCtx) {
+                new Chart(performanceCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Sept', 'Oct', 'Nov', 'Déc', 'Jan'],
+                        datasets: [{
+                            label: 'Moyenne générale',
+                            data: [11.2, 12.1, 12.8, 12.5, 12.9],
+                            borderColor: '#4CAF50',
+                            backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+
+            // Subject Performance Chart
+            const subjectCtx = document.getElementById('subjectChart');
+            if (subjectCtx) {
+                new Chart(subjectCtx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Maths', 'Français', 'Sciences', 'Histoire', 'Anglais'],
+                        datasets: [{
+                            label: 'Performance',
+                            data: [85, 78, 92, 74, 88],
+                            borderColor: '#2196F3',
+                            backgroundColor: 'rgba(33, 150, 243, 0.2)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart');
+            if (revenueCtx) {
+                new Chart(revenueCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai'],
+                        datasets: [{
+                            label: 'Revenus (FCFA)',
+                            data: [450000, 520000, 480000, 610000, 580000],
+                            backgroundColor: '#FF9800'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+
+            // Payment Status Chart
+            const paymentCtx = document.getElementById('paymentChart');
+            if (paymentCtx) {
+                new Chart(paymentCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Payé', 'En attente', 'En retard'],
+                        datasets: [{
+                            data: [75, 20, 5],
+                            backgroundColor: ['#4CAF50', '#FF9800', '#F44336']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+
+            // Attendance Chart
+            const attendanceCtx = document.getElementById('attendanceChart');
+            if (attendanceCtx) {
+                new Chart(attendanceCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven'],
+                        datasets: [{
+                            label: 'Taux de présence (%)',
+                            data: [95, 92, 94, 89, 91],
+                            borderColor: '#9C27B0',
+                            backgroundColor: 'rgba(156, 39, 176, 0.1)',
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+
+            // Staff Chart
+            const staffCtx = document.getElementById('staffChart');
+            if (staffCtx) {
+                new Chart(staffCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Enseignants', 'Administration', 'Technique'],
+                        datasets: [{
+                            data: [45, 12, 8],
+                            backgroundColor: ['#3F51B5', '#009688', '#795548']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+        }
+
+        function generateReport() {
+            alert('Génération du rapport PDF en cours...');
+        }
+
+        function exportData() {
+            alert('Export des données en cours...');
+        }
+    </script>
+</body>
+</html>

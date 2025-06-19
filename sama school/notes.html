@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MySchool 221 - Notes & Bulletins</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-yellow: #F7B000;
+            --primary-blue: #407CEE;
+            --primary-black: #000000;
+        }
+        
+        .bg-primary-yellow { background-color: var(--primary-yellow); }
+        .bg-primary-blue { background-color: var(--primary-blue); }
+        .text-primary-yellow { color: var(--primary-yellow); }
+        .text-primary-blue { color: var(--primary-blue); }
+        .border-primary-yellow { border-color: var(--primary-yellow); }
+        .border-primary-blue { border-color: var(--primary-blue); }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sidebar {
+            transition: transform 0.3s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+        }
+        
+        .grade-excellent { background: linear-gradient(135deg, #10B981, #34D399); }
+        .grade-good { background: linear-gradient(135deg, #3B82F6, #60A5FA); }
+        .grade-average { background: linear-gradient(135deg, #F59E0B, #FBBF24); }
+        .grade-poor { background: linear-gradient(135deg, #EF4444, #F87171); }
+        
+        .bulletin-card {
+            transition: all 0.3s ease;
+        }
+        
+        .bulletin-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg border-b-4 border-primary-blue">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <button id="menu-toggle" class="md:hidden text-primary-blue">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-primary-blue rounded-lg flex items-center justify-center">
+                            <i class="fas fa-graduation-cap text-white text-lg"></i>
+                        </div>
+                        <h1 class="text-2xl font-bold text-primary-black">MySchool 221</h1>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button onclick="openModal('notificationModal')" class="relative p-2 text-primary-blue hover:bg-gray-100 rounded-lg">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">5</span>
+                    </button>
+                    
+                    <div class="flex items-center space-x-3">
+                        <img src="/placeholder.svg?height=40&width=40" alt="Admin" class="w-10 h-10 rounded-full border-2 border-primary-yellow">
+                        <div class="hidden md:block">
+                            <p class="text-sm font-medium text-primary-black">Admin Principal</p>
+                            <p class="text-xs text-gray-500">Super Administrateur</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar bg-white w-64 min-h-screen shadow-lg border-r-4 border-primary-yellow">
+            <div class="p-6">
+                <div class="space-y-2">
+                    <a href="dashboard.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-tachometer-alt text-primary-blue"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    
+                    <button onclick="openModal('schoolModal')" class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-school text-primary-blue"></i>
+                        <span>Gestion des Écoles</span>
+                    </button>
+                    
+                    <button onclick="openModal('teacherModal')" class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-chalkboard-teacher text-primary-blue"></i>
+                        <span>Enseignants & Employés</span>
+                    </button>
+                    
+                    <a href="eleves.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-user-graduate text-primary-blue"></i>
+                        <span>Élèves</span>
+                    </a>
+                    
+                    <a href="classes.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-users text-primary-blue"></i>
+                        <span>Classes</span>
+                    </a>
+                    
+                    <a href="finances.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-money-bill-wave text-primary-blue"></i>
+                        <span>Finances</span>
+                    </a>
+                    
+                    <a href="emplois-temps.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-calendar-alt text-primary-blue"></i>
+                        <span>Emplois du Temps</span>
+                    </a>
+                    
+                    <a href="notes.html" class="flex items-center space-x-3 p-3 rounded-lg bg-primary-blue text-white">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Notes & Bulletins</span>
+                    </a>
+                    
+                    <a href="presences.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-clock text-primary-blue"></i>
+                        <span>Présences</span>
+                    </a>
+                    
+                    <a href="communication.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-comments text-primary-blue"></i>
+                        <span>Communication</span>
+                    </a>
+                    
+                    <a href="rapports.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-chart-bar text-primary-blue"></i>
+                        <span>Rapports</span>
+                    </a>
+                    
+                    <a href="parametres.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-cog text-primary-blue"></i>
+                        <span>Paramètres</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenu principal - Notes & Bulletins -->
+        <div class="flex-1 p-6">
+            <!-- En-tête -->
+            <div class="mb-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold text-primary-black">Notes & Bulletins</h1>
+                        <p class="text-gray-600 mt-2">Gestion des évaluations et bulletins scolaires</p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button onclick="openModal('addGradeModal')" class="bg-primary-yellow text-white px-6 py-3 rounded-lg hover:opacity-90 flex items-center space-x-2">
+                            <i class="fas fa-plus"></i>
+                            <span>Ajouter Note</span>
+                        </button>
+                        <button onclick="generateBulletins()" class="bg-primary-blue text-white px-6 py-3 rounded-lg hover:opacity-90 flex items-center space-x-2">
+                            <i class="fas fa-file-pdf"></i>
+                            <span>Générer Bulletins</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistiques des notes -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Moyenne Générale</p>
+                            <p class="text-3xl font-bold text-green-500">15.2</p>
+                            <p class="text-sm text-green-600">/20</p>
+                        </div>
+                        <i class="fas fa-chart-line text-green-500 text-2xl"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-primary-blue">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Évaluations ce Mois</p>
+                            <p class="text-3xl font-bold text-primary-blue">247</p>
+                            <p class="text-sm text-blue-600">Notes saisies</p>
+                        </div>
+                        <i class="fas fa-clipboard-list text-primary-blue text-2xl"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-primary-yellow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Bulletins Générés</p>
+                            <p class="text-3xl font-bold text-primary-yellow">89%</p>
+                            <p class="text-sm text-yellow-600">Ce trimestre</p>
+                        </div>
+                        <i class="fas fa-file-alt text-primary-yellow text-2xl"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-red-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">En Difficulté</p>
+                            <p class="text-3xl font-bold text-red-500">23</p>
+                            <p class="text-sm text-red-600">Élèves < 10/20</p>
+                        </div>
+                        <i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtres et sélection -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <select class="px-4 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                        <option>École Les Palmiers</option>
+                        <option>Collège Excellence</option>
+                        <option>Lycée Moderne</option>
+                        <option>École Bilingue Avenir</option>
+                    </select>
+                    <select class="px-4 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                        <option>CM2 A</option>
+                        <option>CM2 B</option>
+                        <option>6ème A</option>
+                        <option>3ème B</option>
+                    </select>
+                    <select class="px-4 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                        <option>Toutes les matières</option>
+                        <option>Mathématiques</option>
+                        <option>Français</option>
+                        <option>Sciences</option>
+                        <option>Histoire</option>
+                    </select>
+                    <select class="px-4 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                        <option>1er Trimestre</option>
+                        <option>2ème Trimestre</option>
+                        <option>3ème Trimestre</option>
+                    </select>
+                    <button class="bg-primary-blue text-white px-4 py-2 rounded-lg hover:opacity-90">
+                        <i class="fas fa-search mr-2"></i>Filtrer
+                    </button>
+                </div>
+            </div>
+
+            <!-- Graphiques de performance -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-primary-black mb-4">Évolution des Moyennes</h3>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="averageEvolutionChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-primary-black mb-4">Répartition des Notes</h3>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="gradeDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tableau des notes récentes -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-primary-black">Notes Récentes - CM2 A</h3>
+                        <div class="flex space-x-2">
+                            <button onclick="exportGrades()" class="bg-primary-yellow text-white px-4 py-2 rounded-lg hover:opacity-90 text-sm">
+                                <i class="fas fa-download mr-2"></i>Exporter
+                            </button>
+                            <button onclick="openModal('bulkGradeModal')" class="bg-primary-blue text-white px-4 py-2 rounded-lg hover:opacity-90 text-sm">
+                                <i class="fas fa-upload mr-2"></i>Import Excel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="text-left py-3 px-6 font-semibold text-primary-black">Élève</th>
+                                <th class="text-left py-3 px-6 font-semibold text-primary-black">Mathématiques</th>
+                                <th class="text-left py-3 px-6 font-semibold text-primary-black">Français</th>
+                                <th class="text-left py-3 px-6 font-semibold text-primary-black">Sciences</th>
+                                <th class="text-left py-3 px-6 font-semibold text-primary-black">Histoire</th>
+                                <th class="text-left py-3 px-6 font-semibold text-primary-black">Moyenne</th>
+                                <th class="text-left py-3 px-6 font-semibold text-primary-black">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr class="hover:bg-gray-50">
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center space-x-3">
+                                        <img src="/placeholder.svg?height=32&width=32" alt="Élève" class="w-8 h-8 rounded-full">
+                                        <div>
+                                            <p class="font-medium text-primary-black">Amadou Ba</p>
+                                            <p class="text-xs text-gray-600">ID: ELV001</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="grade-excellent text-white px-3 py-1 rounded-full text-sm font-semibold">18/20</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="grade-good text-white px-3 py-1 rounded-full text-sm font-semibold">16/20</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="grade-excellent text-white px-3 py-1 rounded-full text-sm font-semibold">17/20</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="grade-good text-white px-3 py-1 rounded-full text-sm font-semibold">15/20</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="grade-excellent text-white px-3 py-1 rounded-full text-sm font-semibold">16.5/20</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="flex space-x-2">
+                                        <button onclick="showBulletin('ELV001')" class="bg-primary-blue text-white px-3 py-1 rounded text-xs hover:opacity-90">
+                                            Bulletin
+                                        </button>
+                                        <button onclick="editGrades('ELV001')" class="bg-primary-yellow text-white px-3 py-1 rounded text-xs hover:opacity-90">
+                                            Modifier
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr class="hover:bg-gray-50">
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center space-x-3">
+                                        <img src="/placeholder.svg?height=32&width=32" alt="Élève" class="w-8 h-8 rounded-full">
+                                        <div>
+                                            <p class="font-medium text-primary-black">Fatou Sow</p>
+                                            <p class="text-xs text-gray-600">ID: ELV002</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="grade-good text-white px-3 py-1 rounded-full text-sm font-semibold">14/20</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="grade-excellent text-white px-3 py-1 rounded-full text-sm font-semibold">17/20</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="grade-average text-white px-3 py-1 rounded-full text-sm font-semibold">13/20</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="grade-good text-white px-3 py-1 rounded-full text-sm font-semibold">15/20</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="grade-good text-white px-3 py-1 rounded-full text-sm font-semibold">14.8/20</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="flex space-x-2">
+                                        <button onclick="showBulletin('ELV002')" class="bg-primary-blue text-white px-3 py-1 rounded text-xs hover:opacity-90">
+                                            Bulletin
+                                        </button>
+                                        <button onclick="editGrades('ELV002')" class="bg-primary-yellow text-white px-3 py-1 rounded text-xs hover:opacity-90">
+                                            Modifier
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr class="hover:bg-gray-50">
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center space-x-3">
+                                        <img src="/placeholder.svg?height=32&width=32" alt="Élève" class="w-8 h-8 rounded-full">
+                                        <div>
+                                            <p class="font-medium text-primary-black">Moussa Diallo</p>
+                                            <p class="text-xs text-gray-600">ID: ELV003</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="grade-poor text-white px-3 py-1 rounded-full text-sm font-semibold">8/20</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="grade-average text-white px-3 py-1 rounded-full text-sm font-semibold">11/20</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="grade-poor text-white px-3 py-1 rounded-full text-sm font-semibold">9/20</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="grade-average text-white px-3 py-1 rounded-full text-sm font-semibold">12/20</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="grade-poor text-white px-3 py-1 rounded-full text-sm font-semibold">10/20</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="flex space-x-2">
+                                        <button onclick="showBulletin('ELV003')" class="bg-primary-blue text-white px-3 py-1 rounded text-xs hover:opacity-90">
+                                            Bulletin
+                                        </button>
+                                        <button onclick="editGrades('ELV003')" class="bg-red-500 text-white px-3 py-1 rounded text-xs hover:opacity-90">
+                                            Soutien
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Bulletins récents -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-semibold text-primary-black">Bulletins du Trimestre</h3>
+                    <button onclick="generateAllBulletins()" class="bg-primary-blue text-white px-4 py-2 rounded-lg hover:opacity-90">
+                        <i class="fas fa-file-pdf mr-2"></i>Générer Tous
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bulletin-card border border-gray-200 rounded-lg p-4">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <img src="/placeholder.svg?height=40&width=40" alt="Élève" class="w-10 h-10 rounded-full border-2 border-primary-blue">
+                            <div>
+                                <h4 class="font-semibold text-primary-black">Amadou Ba</h4>
+                                <p class="text-sm text-gray-600">CM2 A - 1er Trimestre</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Moyenne générale:</span>
+                                <span class="font-semibold text-green-600">16.5/20</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Rang:</span>
+                                <span class="font-semibold">2ème/32</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Statut:</span>
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Admis</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex space-x-2">
+                            <button onclick="viewBulletin('ELV001')" class="flex-1 bg-primary-blue text-white py-2 px-3 rounded text-xs hover:opacity-90">
+                                Voir PDF
+                            </button>
+                            <button onclick="sendBulletin('ELV001')" class="flex-1 bg-primary-yellow text-white py-2 px-3 rounded text-xs hover:opacity-90">
+                                Envoyer
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bulletin-card border border-gray-200 rounded-lg p-4">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <img src="/placeholder.svg?height=40&width=40" alt="Élève" class="w-10 h-10 rounded-full border-2 border-primary-yellow">
+                            <div>
+                                <h4 class="font-semibold text-primary-black">Fatou Sow</h4>
+                                <p class="text-sm text-gray-600">CM2 A - 1er Trimestre</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Moyenne générale:</span>
+                                <span class="font-semibold text-green-600">14.8/20</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Rang:</span>
+                                <span class="font-semibold">8ème/32</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Statut:</span>
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Admis</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex space-x-2">
+                            <button onclick="viewBulletin('ELV002')" class="flex-1 bg-primary-blue text-white py-2 px-3 rounded text-xs hover:opacity-90">
+                                Voir PDF
+                            </button>
+                            <button onclick="sendBulletin('ELV002')" class="flex-1 bg-primary-yellow text-white py-2 px-3 rounded text-xs hover:opacity-90">
+                                Envoyer
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bulletin-card border border-red-200 rounded-lg p-4 bg-red-50">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <img src="/placeholder.svg?height=40&width=40" alt="Élève" class="w-10 h-10 rounded-full border-2 border-red-500">
+                            <div>
+                                <h4 class="font-semibold text-primary-black">Moussa Diallo</h4>
+                                <p class="text-sm text-gray-600">CM2 A - 1er Trimestre</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Moyenne générale:</span>
+                                <span class="font-semibold text-red-600">10.0/20</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Rang:</span>
+                                <span class="font-semibold">28ème/32</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Statut:</span>
+                                <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">Soutien</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex space-x-2">
+                            <button onclick="viewBulletin('ELV003')" class="flex-1 bg-primary-blue text-white py-2 px-3 rounded text-xs hover:opacity-90">
+                                Voir PDF
+                            </button>
+                            <button onclick="planSupport('ELV003')" class="flex-1 bg-red-500 text-white py-2 px-3 rounded text-xs hover:opacity-90">
+                                Plan Soutien
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ajouter Note -->
+    <div id="addGradeModal" class="modal">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-primary-black">Ajouter une Note</h2>
+                    <button onclick="closeModal('addGradeModal')" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <form class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Élève</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                                <option>Amadou Ba</option>
+                                <option>Fatou Sow</option>
+                                <option>Moussa Diallo</option>
+                                <option>Khady Diop</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Matière</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                                <option>Mathématiques</option>
+                                <option>Français</option>
+                                <option>Sciences</option>
+                                <option>Histoire</option>
+                                <option>EPS</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Type d'évaluation</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                                <option>Devoir surveillé</option>
+                                <option>Contrôle continu</option>
+                                <option>Examen</option>
+                                <option>Oral</option>
+                                <option>Projet</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Note /20</label>
+                            <input type="number" min="0" max="20" step="0.5" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Coefficient</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                                <option>1</option>
+                                <option>2</option>
+                                <option>3</option>
+                                <option>4</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                            <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Commentaire (optionnel)</label>
+                        <textarea rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-primary-blue" placeholder="Commentaire sur l'évaluation..."></textarea>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-4 pt-6">
+                        <button type="button" onclick="closeModal('addGradeModal')" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                            Annuler
+                        </button>
+                        <button type="submit" class="px-6 py-2 bg-primary-yellow text-white rounded-lg hover:opacity-90">
+                            Ajouter la Note
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fonctions pour les modals
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Menu mobile
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+
+        // Graphique d'évolution des moyennes
+        const averageCtx = document.getElementById('averageEvolutionChart').getContext('2d');
+        new Chart(averageCtx, {
+            type: 'line',
+            data: {
+                labels: ['Sep', 'Oct', 'Nov', 'Déc', 'Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun'],
+                datasets: [{
+                    label: 'Moyenne Classe',
+                    data: [13.2, 13.8, 14.1, 14.5, 14.2, 14.8, 15.1, 15.3, 15.6, 15.8],
+                    borderColor: '#407CEE',
+                    backgroundColor: 'rgba(64, 124, 238, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 10,
+                        max: 20
+                    }
+                }
+            }
+        });
+
+        // Graphique de répartition des notes
+        const gradeCtx = document.getElementById('gradeDistributionChart').getContext('2d');
+        new Chart(gradeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Excellent (16-20)', 'Bien (14-16)', 'Assez Bien (12-14)', 'Passable (10-12)', 'Insuffisant (<10)'],
+                datasets: [{
+                    data: [25, 35, 20, 15, 5],
+                    backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#6B7280']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        // Fonctions pour les actions
+        function showBulletin(studentId) {
+            console.log('Affichage du bulletin pour:', studentId);
+        }
+
+        function editGrades(studentId) {
+            console.log('Modification des notes pour:', studentId);
+        }
+
+        function viewBulletin(studentId) {
+            console.log('Visualisation du bulletin PDF pour:', studentId);
+        }
+
+        function sendBulletin(studentId) {
+            console.log('Envoi du bulletin pour:', studentId);
+        }
+
+        function planSupport(studentId) {
+            console.log('Plan de soutien pour:', studentId);
+        }
+
+        function generateBulletins() {
+            console.log('Génération des bulletins en cours...');
+        }
+
+        function generateAllBulletins() {
+            console.log('Génération de tous les bulletins...');
+        }
+
+        function exportGrades() {
+            console.log('Export des notes en cours...');
+        }
+
+        // Gestion responsive de la sidebar
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 768) {
+                document.getElementById('sidebar').classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

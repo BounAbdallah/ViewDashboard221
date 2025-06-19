@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Communication - MySchool 221</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-graduation-cap"></i> MySchool 221</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="index.html"><i class="fas fa-home"></i> Tableau de bord</a>
+                <a href="ecoles.html"><i class="fas fa-school"></i> Écoles</a>
+                <a href="enseignants.html"><i class="fas fa-chalkboard-teacher"></i> Enseignants</a>
+                <a href="eleves.html"><i class="fas fa-user-graduate"></i> Élèves</a>
+                <a href="classes.html"><i class="fas fa-users"></i> Classes</a>
+                <a href="emplois-temps.html"><i class="fas fa-calendar-alt"></i> Emplois du temps</a>
+                <a href="notes.html"><i class="fas fa-clipboard-list"></i> Notes</a>
+                <a href="presences.html"><i class="fas fa-user-check"></i> Présences</a>
+                <a href="communication.html" class="active"><i class="fas fa-comments"></i> Communication</a>
+                <a href="finances.html"><i class="fas fa-money-bill-wave"></i> Finances</a>
+                <a href="rapports.html"><i class="fas fa-chart-bar"></i> Rapports</a>
+                <a href="parametres.html"><i class="fas fa-cog"></i> Paramètres</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <h1><i class="fas fa-comments"></i> Communication</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="openNewMessageModal()">
+                        <i class="fas fa-plus"></i> Nouveau message
+                    </button>
+                </div>
+            </header>
+
+            <!-- Communication Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="showTab('messages')">
+                    <i class="fas fa-envelope"></i> Messages
+                </button>
+                <button class="tab-btn" onclick="showTab('notifications')">
+                    <i class="fas fa-bell"></i> Notifications
+                </button>
+                <button class="tab-btn" onclick="showTab('annonces')">
+                    <i class="fas fa-bullhorn"></i> Annonces
+                </button>
+                <button class="tab-btn" onclick="showTab('sms')">
+                    <i class="fas fa-sms"></i> SMS
+                </button>
+            </div>
+
+            <!-- Messages Tab -->
+            <div id="messages" class="tab-content active">
+                <div class="communication-layout">
+                    <!-- Messages List -->
+                    <div class="messages-sidebar">
+                        <div class="messages-header">
+                            <h3>Boîte de réception</h3>
+                            <span class="badge">12</span>
+                        </div>
+                        <div class="messages-list">
+                            <div class="message-item unread" onclick="selectMessage(1)">
+                                <div class="message-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="message-info">
+                                    <div class="message-sender">Marie Dupont</div>
+                                    <div class="message-subject">Absence de l'élève</div>
+                                    <div class="message-time">Il y a 2h</div>
+                                </div>
+                            </div>
+                            <div class="message-item" onclick="selectMessage(2)">
+                                <div class="message-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="message-info">
+                                    <div class="message-sender">Jean Martin</div>
+                                    <div class="message-subject">Réunion parents</div>
+                                    <div class="message-time">Hier</div>
+                                </div>
+                            </div>
+                            <div class="message-item" onclick="selectMessage(3)">
+                                <div class="message-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="message-info">
+                                    <div class="message-sender">Sophie Bernard</div>
+                                    <div class="message-subject">Demande de rendez-vous</div>
+                                    <div class="message-time">2 jours</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Message Content -->
+                    <div class="message-content">
+                        <div class="message-header">
+                            <h3>Absence de l'élève</h3>
+                            <div class="message-actions">
+                                <button class="btn btn-sm"><i class="fas fa-reply"></i> Répondre</button>
+                                <button class="btn btn-sm"><i class="fas fa-forward"></i> Transférer</button>
+                                <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="message-details">
+                            <div class="message-from">
+                                <strong>De:</strong> Marie Dupont (parent)
+                            </div>
+                            <div class="message-date">
+                                <strong>Date:</strong> 15 janvier 2024, 14:30
+                            </div>
+                        </div>
+                        <div class="message-body">
+                            <p>Bonjour,</p>
+                            <p>Je vous informe que mon fils Pierre Dupont (Classe 6ème A) sera absent demain 16 janvier en raison d'un rendez-vous médical.</p>
+                            <p>Merci de votre compréhension.</p>
+                            <p>Cordialement,<br>Marie Dupont</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications Tab -->
+            <div id="notifications" class="tab-content">
+                <div class="notifications-container">
+                    <div class="notifications-header">
+                        <h3>Centre de notifications</h3>
+                        <button class="btn btn-primary" onclick="createNotification()">
+                            <i class="fas fa-plus"></i> Créer notification
+                        </button>
+                    </div>
+                    
+                    <div class="notifications-list">
+                        <div class="notification-item urgent">
+                            <div class="notification-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h4>Alerte sécurité</h4>
+                                <p>Exercice d'évacuation prévu demain à 10h</p>
+                                <span class="notification-time">Il y a 1h</span>
+                            </div>
+                            <div class="notification-actions">
+                                <button class="btn btn-sm">Modifier</button>
+                                <button class="btn btn-sm btn-danger">Supprimer</button>
+                            </div>
+                        </div>
+
+                        <div class="notification-item info">
+                            <div class="notification-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h4>Réunion pédagogique</h4>
+                                <p>Réunion des enseignants le vendredi 19 janvier à 16h</p>
+                                <span class="notification-time">Il y a 3h</span>
+                            </div>
+                            <div class="notification-actions">
+                                <button class="btn btn-sm">Modifier</button>
+                                <button class="btn btn-sm btn-danger">Supprimer</button>
+                            </div>
+                        </div>
+
+                        <div class="notification-item success">
+                            <div class="notification-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h4>Mise à jour système</h4>
+                                <p>Le système a été mis à jour avec succès</p>
+                                <span class="notification-time">Hier</span>
+                            </div>
+                            <div class="notification-actions">
+                                <button class="btn btn-sm">Modifier</button>
+                                <button class="btn btn-sm btn-danger">Supprimer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Annonces Tab -->
+            <div id="annonces" class="tab-content">
+                <div class="annonces-container">
+                    <div class="annonces-header">
+                        <h3>Gestion des annonces</h3>
+                        <button class="btn btn-primary" onclick="createAnnouncement()">
+                            <i class="fas fa-plus"></i> Nouvelle annonce
+                        </button>
+                    </div>
+
+                    <div class="annonces-grid">
+                        <div class="annonce-card">
+                            <div class="annonce-header">
+                                <h4>Vacances scolaires</h4>
+                                <span class="annonce-status published">Publié</span>
+                            </div>
+                            <div class="annonce-content">
+                                <p>Les vacances de février auront lieu du 17 au 28 février 2024.</p>
+                                <div class="annonce-meta">
+                                    <span><i class="fas fa-calendar"></i> Publié le 10/01/2024</span>
+                                    <span><i class="fas fa-eye"></i> 245 vues</span>
+                                </div>
+                            </div>
+                            <div class="annonce-actions">
+                                <button class="btn btn-sm">Modifier</button>
+                                <button class="btn btn-sm btn-warning">Dépublier</button>
+                                <button class="btn btn-sm btn-danger">Supprimer</button>
+                            </div>
+                        </div>
+
+                        <div class="annonce-card">
+                            <div class="annonce-header">
+                                <h4>Journée portes ouvertes</h4>
+                                <span class="annonce-status draft">Brouillon</span>
+                            </div>
+                            <div class="annonce-content">
+                                <p>Journée portes ouvertes le samedi 3 février de 9h à 17h.</p>
+                                <div class="annonce-meta">
+                                    <span><i class="fas fa-calendar"></i> Créé le 12/01/2024</span>
+                                    <span><i class="fas fa-eye"></i> 0 vue</span>
+                                </div>
+                            </div>
+                            <div class="annonce-actions">
+                                <button class="btn btn-sm">Modifier</button>
+                                <button class="btn btn-sm btn-success">Publier</button>
+                                <button class="btn btn-sm btn-danger">Supprimer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SMS Tab -->
+            <div id="sms" class="tab-content">
+                <div class="sms-container">
+                    <div class="sms-header">
+                        <h3>Envoi de SMS</h3>
+                        <div class="sms-balance">
+                            <span>Crédit SMS: <strong>1,250</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="sms-form">
+                        <div class="form-group">
+                            <label>Destinataires</label>
+                            <select class="form-control" id="smsRecipients">
+                                <option>Tous les parents</option>
+                                <option>Parents de 6ème A</option>
+                                <option>Parents de 5ème B</option>
+                                <option>Enseignants</option>
+                                <option>Personnel administratif</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea class="form-control" rows="4" placeholder="Tapez votre message..." maxlength="160"></textarea>
+                            <div class="character-count">0/160 caractères</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox"> Programmer l'envoi
+                            </label>
+                            <input type="datetime-local" class="form-control" style="margin-top: 10px;">
+                        </div>
+
+                        <div class="sms-actions">
+                            <button class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Envoyer SMS
+                            </button>
+                            <button class="btn btn-secondary">
+                                <i class="fas fa-save"></i> Sauvegarder brouillon
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="sms-history">
+                        <h4>Historique des envois</h4>
+                        <div class="sms-history-list">
+                            <div class="sms-history-item">
+                                <div class="sms-info">
+                                    <strong>Rappel réunion parents</strong>
+                                    <span>Envoyé à 45 parents - 15/01/2024 14:30</span>
+                                </div>
+                                <span class="sms-status delivered">Livré</span>
+                            </div>
+                            <div class="sms-history-item">
+                                <div class="sms-info">
+                                    <strong>Fermeture exceptionnelle</strong>
+                                    <span>Envoyé à 120 contacts - 12/01/2024 08:00</span>
+                                </div>
+                                <span class="sms-status delivered">Livré</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="scripts.js"></script>
+    <script>
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all tab buttons
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            tabBtns.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab button
+            event.target.classList.add('active');
+        }
+
+        function selectMessage(messageId) {
+            // Remove active class from all messages
+            const messages = document.querySelectorAll('.message-item');
+            messages.forEach(msg => msg.classList.remove('active'));
+            
+            // Add active class to selected message
+            event.currentTarget.classList.add('active');
+            event.currentTarget.classList.remove('unread');
+        }
+
+        function openNewMessageModal() {
+            alert('Ouverture du modal de nouveau message');
+        }
+
+        function createNotification() {
+            alert('Ouverture du formulaire de création de notification');
+        }
+
+        function createAnnouncement() {
+            alert('Ouverture du formulaire de création d\'annonce');
+        }
+    </script>
+</body>
+</html>

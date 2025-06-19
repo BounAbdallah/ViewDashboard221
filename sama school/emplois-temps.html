@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MySchool 221 - Emplois du Temps</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-yellow: #F7B000;
+            --primary-blue: #407CEE;
+            --primary-black: #000000;
+        }
+        
+        .bg-primary-yellow { background-color: var(--primary-yellow); }
+        .bg-primary-blue { background-color: var(--primary-blue); }
+        .text-primary-yellow { color: var(--primary-yellow); }
+        .text-primary-blue { color: var(--primary-blue); }
+        .border-primary-yellow { border-color: var(--primary-yellow); }
+        .border-primary-blue { border-color: var(--primary-blue); }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sidebar {
+            transition: transform 0.3s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+        }
+        
+        .schedule-cell {
+            min-height: 60px;
+            border: 1px solid #e5e7eb;
+            position: relative;
+        }
+        
+        .schedule-item {
+            background: linear-gradient(135deg, #407CEE, #5B8DEF);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin: 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .schedule-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .schedule-item.math { background: linear-gradient(135deg, #F7B000, #F9C74F); }
+        .schedule-item.french { background: linear-gradient(135deg, #10B981, #34D399); }
+        .schedule-item.science { background: linear-gradient(135deg, #8B5CF6, #A78BFA); }
+        .schedule-item.history { background: linear-gradient(135deg, #EF4444, #F87171); }
+        .schedule-item.sport { background: linear-gradient(135deg, #F59E0B, #FBBF24); }
+        
+        .time-slot {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #475569;
+        }
+        
+        .day-header {
+            background: linear-gradient(135deg, #407CEE, #5B8DEF);
+            color: white;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg border-b-4 border-primary-blue">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <button id="menu-toggle" class="md:hidden text-primary-blue">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-primary-blue rounded-lg flex items-center justify-center">
+                            <i class="fas fa-graduation-cap text-white text-lg"></i>
+                        </div>
+                        <h1 class="text-2xl font-bold text-primary-black">MySchool 221</h1>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button onclick="openModal('notificationModal')" class="relative p-2 text-primary-blue hover:bg-gray-100 rounded-lg">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">5</span>
+                    </button>
+                    
+                    <div class="flex items-center space-x-3">
+                        <img src="/placeholder.svg?height=40&width=40" alt="Admin" class="w-10 h-10 rounded-full border-2 border-primary-yellow">
+                        <div class="hidden md:block">
+                            <p class="text-sm font-medium text-primary-black">Admin Principal</p>
+                            <p class="text-xs text-gray-500">Super Administrateur</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar bg-white w-64 min-h-screen shadow-lg border-r-4 border-primary-yellow">
+            <div class="p-6">
+                <div class="space-y-2">
+                    <a href="dashboard.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-tachometer-alt text-primary-blue"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    
+                    <button onclick="openModal('schoolModal')" class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-school text-primary-blue"></i>
+                        <span>Gestion des Écoles</span>
+                    </button>
+                    
+                    <button onclick="openModal('teacherModal')" class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-chalkboard-teacher text-primary-blue"></i>
+                        <span>Enseignants & Employés</span>
+                    </button>
+                    
+                    <a href="eleves.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-user-graduate text-primary-blue"></i>
+                        <span>Élèves</span>
+                    </a>
+                    
+                    <a href="classes.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-users text-primary-blue"></i>
+                        <span>Classes</span>
+                    </a>
+                    
+                    <a href="finances.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-money-bill-wave text-primary-blue"></i>
+                        <span>Finances</span>
+                    </a>
+                    
+                    <a href="emplois-temps.html" class="flex items-center space-x-3 p-3 rounded-lg bg-primary-blue text-white">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Emplois du Temps</span>
+                    </a>
+                    
+                    <a href="notes.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-file-alt text-primary-blue"></i>
+                        <span>Notes & Bulletins</span>
+                    </a>
+                    
+                    <a href="presences.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-clock text-primary-blue"></i>
+                        <span>Présences</span>
+                    </a>
+                    
+                    <a href="communication.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-comments text-primary-blue"></i>
+                        <span>Communication</span>
+                    </a>
+                    
+                    <a href="rapports.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-chart-bar text-primary-blue"></i>
+                        <span>Rapports</span>
+                    </a>
+                    
+                    <a href="parametres.html" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 text-primary-black">
+                        <i class="fas fa-cog text-primary-blue"></i>
+                        <span>Paramètres</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenu principal - Emplois du Temps -->
+        <div class="flex-1 p-6">
+            <!-- En-tête -->
+            <div class="mb-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold text-primary-black">Emplois du Temps</h1>
+                        <p class="text-gray-600 mt-2">Planification et gestion des horaires de cours</p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button onclick="openModal('addCourseModal')" class="bg-primary-yellow text-white px-6 py-3 rounded-lg hover:opacity-90 flex items-center space-x-2">
+                            <i class="fas fa-plus"></i>
+                            <span>Ajouter Cours</span>
+                        </button>
+                        <button onclick="generateSchedule()" class="bg-primary-blue text-white px-6 py-3 rounded-lg hover:opacity-90 flex items-center space-x-2">
+                            <i class="fas fa-magic"></i>
+                            <span>Générer Auto</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtres et sélection -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <select id="schoolSelect" class="px-4 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                        <option>École Les Palmiers</option>
+                        <option>Collège Excellence</option>
+                        <option>Lycée Moderne</option>
+                        <option>École Bilingue Avenir</option>
+                    </select>
+                    <select id="classSelect" class="px-4 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                        <option>CM2 A</option>
+                        <option>CM2 B</option>
+                        <option>6ème A</option>
+                        <option>6ème B</option>
+                        <option>3ème A</option>
+                    </select>
+                    <input type="week" id="weekSelect" class="px-4 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                    <div class="flex space-x-2">
+                        <button onclick="exportSchedule()" class="flex-1 bg-primary-yellow text-white px-4 py-2 rounded-lg hover:opacity-90 text-sm">
+                            <i class="fas fa-download mr-2"></i>Export
+                        </button>
+                        <button onclick="printSchedule()" class="flex-1 bg-primary-blue text-white px-4 py-2 rounded-lg hover:opacity-90 text-sm">
+                            <i class="fas fa-print mr-2"></i>Imprimer
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistiques rapides -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-primary-blue">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Heures/Semaine</p>
+                            <p class="text-3xl font-bold text-primary-blue">32h</p>
+                            <p class="text-sm text-blue-600">CM2 A</p>
+                        </div>
+                        <i class="fas fa-clock text-primary-blue text-2xl"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-primary-yellow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Matières</p>
+                            <p class="text-3xl font-bold text-primary-yellow">8</p>
+                            <p class="text-sm text-yellow-600">Différentes</p>
+                        </div>
+                        <i class="fas fa-book text-primary-yellow text-2xl"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Enseignants</p>
+                            <p class="text-3xl font-bold text-green-500">6</p>
+                            <p class="text-sm text-green-600">Assignés</p>
+                        </div>
+                        <i class="fas fa-chalkboard-teacher text-green-500 text-2xl"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Salles</p>
+                            <p class="text-3xl font-bold text-purple-500">4</p>
+                            <p class="text-sm text-purple-600">Utilisées</p>
+                        </div>
+                        <i class="fas fa-door-open text-purple-500 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emploi du temps principal -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-primary-black">Emploi du Temps - CM2 A</h3>
+                        <div class="flex items-center space-x-4">
+                            <span class="text-sm text-gray-600">Semaine du 11-15 Décembre 2024</span>
+                            <div class="flex space-x-2">
+                                <button onclick="previousWeek()" class="p-2 border border-gray-300 rounded hover:bg-gray-50">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button onclick="nextWeek()" class="p-2 border border-gray-300 rounded hover:bg-gray-50">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr>
+                                <th class="time-slot p-3 text-center border">Heures</th>
+                                <th class="day-header p-3 text-center border">Lundi</th>
+                                <th class="day-header p-3 text-center border">Mardi</th>
+                                <th class="day-header p-3 text-center border">Mercredi</th>
+                                <th class="day-header p-3 text-center border">Jeudi</th>
+                                <th class="day-header p-3 text-center border">Vendredi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="time-slot p-3 text-center border font-semibold">8h00-9h00</td>
+                                <td class="schedule-cell p-2 border">
+                                    <div class="schedule-item math" onclick="editCourse('MATH_L_8H')">
+                                        <div class="font-semibold">Mathématiques</div>
+                                        <div class="text-xs">Mme Diop - Salle 201</div>
+                                    </div>
+                                </td>
+                                <td class="schedule-cell p-2 border">
+                                    <div class="schedule-item french" onclick="editCourse('FR_M_8H')">
+                                        <div class="font-semibold">Français</div>
+                                        <div class="text-xs">M. Kane - Salle 201</div>
+                                    </div>
+                                </td>
+                                <td class="schedule-cell p-2 border">
+                                    <div class="schedule-item science" onclick="editCourse('SCI_ME_8H')">
+                                        <div class="font-semibold">Sciences</div>
+                                        <div class="text-xs">Mme Sy - Lab 1</div>
+                                    </div>
+                                </td>
+                                <td class="schedule-cell p-2 border">
+                                    <div class="schedule-item math" onclick="editCourse('MATH_J_8H')">
+                                        <div class="font-semibold">Mathématiques</div>
+                                        <div class="text-xs">Mme Diop - Salle 201</div>
+                                    </div>
+                                </td>
+                                <td class="schedule-cell p-2 border">
+                                    <div class="schedule-item french" onclick="editCourse('FR_V_8H')">
+                                        <div class="font-semibold">Français</div>
+                                        <div class="text-xs">M. Kane - Salle 201</div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="time-slot p-3 text-center border font-semibold">9h00-10h00</td>
+                                <td class="schedule-cell p-2 border">
+                                    <div class="schedule-item french" onclick="editCourse('FR_L_9H')">
+                                        <div class="font-semibold">Français</div>
+                                        <div class="text-xs">M. Kane - Salle 201</div>
+                                    </div>
+                                </td>
+                                <td class="schedule-cell p-2 border">
+                                    <div class="schedule-item math" onclick="editCourse('MATH_M_9H')">
+                                        <div class="font-semibold">Mathématiques</div>
+                                        <div class="text-xs">Mme Diop - Salle 201</div>
+                                    </div>
+                                </td>
+                                <td class="schedule-cell p-2 border">
+                                    <div class="schedule-item history" onclick="editCourse('HIST_ME_9H')">
+                                        <div class="font-semibold">Histoire</div>
+                                        <div class="text-xs">M. Fall - Salle 201</div>
+                                    </div>
+                                </td>
+                                <td class="schedule-cell p-2 border">
+                                    <div class="schedule-item science" onclick="editCourse('SCI_J_9H')">
+                                        <div class="font-semibold">Sciences</div>
+                                        <div class="text-xs">Mme Sy - Lab 1</div>
+                                    </div>
+                                </td>
+                                <td class="schedule-cell p-2 border">
+                                    <div class="schedule-item math" onclick="editCourse('MATH_V_9H')">
+                                        <div class="font-semibold">Mathématiques</div>
+                                        <div class="text-xs">Mme Diop - Salle 201</div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="time-slot p-3 text-center border font-semibold bg-yellow-100">10h00-10h30</td>
+                                <td colspan="5" class="p-3 text-center border bg-yellow-50 font-semibold text-yellow-800">
+                                    <i class="fas fa-coffee mr-2"></i>RÉCRÉATION
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="time-slot p-3 text-center border font-semibold">10h30-11h30</td>
+                                <td class="schedule-cell p-2 border">
+                                    <div class="schedule-item science" onclick="editCourse('SCI_L_10H30')">
+                                        <div class="font-semibold">Sciences</div>
+                                        <div class="text-xs">Mme Sy - Lab 1</div>
+                                    </div>
+                                </td>
+                                <td class="schedule-cell p-2 border">
+                                    <div class="schedule-item history" onclick="editCourse('HIST_M_10H30')">
+                                        <div class="font-semibold">Histoire</div>
+                                        <div class="text-xs">M. Fall - Salle 201</div>
+                                    </div>
+                                </td>
+                                <td class="schedule-cell p-2 border">
+                                    <div class="schedule-item sport" onclick="editCourse('SPORT_ME_10H30')">
+                                        <div class="font-semibold">EPS</div>
+                                        <div class="text-xs">M. Ndiaye - Cour</div>
+                                    </div>
+                                </td>
+                                <td class="schedule-cell p-2 border">
+                                    <div class="schedule-item french" onclick="editCourse('FR_J_10H30')">
+                                        <div class="font-semibold">Français</div>
+                                        <div class="text-xs">M. Kane - Salle 201</div>
+                                    </div>
+                                </td>
+                                <td class="schedule-cell p-2 border">
+                                    <div class="schedule-item science" onclick="editCourse('SCI_V_10H30')">
+                                        <div class="font-semibold">Sciences</div>
+                                        <div class="text-xs">Mme Sy - Lab 1</div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="time-slot p-3 text-center border font-semibold">11h30-12h30</td>
+                                <td class="schedule-cell p-2 border">
+                                    <div class="schedule-item history" onclick="editCourse('HIST_L_11H30')">
+                                        <div class="font-semibold">Histoire</div>
+                                        <div class="text-xs">M. Fall - Salle 201</div>
+                                    </div>
+                                </td>
+                                <td class="schedule-cell p-2 border">
+                                    <div class="schedule-item sport" onclick="editCourse('SPORT_M_11H30')">
+                                        <div class="font-semibold">EPS</div>
+                                        <div class="text-xs">M. Ndiaye - Cour</div>
+                                    </div>
+                                </td>
+                                <td class="schedule-cell p-2 border"></td>
+                                <td class="schedule-cell p-2 border">
+                                    <div class="schedule-item history" onclick="editCourse('HIST_J_11H30')">
+                                        <div class="font-semibold">Histoire</div>
+                                        <div class="text-xs">M. Fall - Salle 201</div>
+                                    </div>
+                                </td>
+                                <td class="schedule-cell p-2 border">
+                                    <div class="schedule-item sport" onclick="editCourse('SPORT_V_11H30')">
+                                        <div class="font-semibold">EPS</div>
+                                        <div class="text-xs">M. Ndiaye - Cour</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Légende et informations -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-primary-black mb-4">Légende des Matières</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-4 h-4 rounded math"></div>
+                            <span class="text-sm">Mathématiques</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-4 h-4 rounded french"></div>
+                            <span class="text-sm">Français</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-4 h-4 rounded science"></div>
+                            <span class="text-sm">Sciences</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-4 h-4 rounded history"></div>
+                            <span class="text-sm">Histoire</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-4 h-4 rounded sport"></div>
+                            <span class="text-sm">EPS</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-primary-black mb-4">Enseignants de la Classe</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <img src="/placeholder.svg?height=32&width=32" alt="Enseignant" class="w-8 h-8 rounded-full">
+                            <div>
+                                <p class="font-medium text-sm">Mme Fatou Diop</p>
+                                <p class="text-xs text-gray-600">Mathématiques</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <img src="/placeholder.svg?height=32&width=32" alt="Enseignant" class="w-8 h-8 rounded-full">
+                            <div>
+                                <p class="font-medium text-sm">M. Amadou Kane</p>
+                                <p class="text-xs text-gray-600">Français</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <img src="/placeholder.svg?height=32&width=32" alt="Enseignant" class="w-8 h-8 rounded-full">
+                            <div>
+                                <p class="font-medium text-sm">Mme Awa Sy</p>
+                                <p class="text-xs text-gray-600">Sciences</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ajouter Cours -->
+    <div id="addCourseModal" class="modal">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-primary-black">Ajouter un Cours</h2>
+                    <button onclick="closeModal('addCourseModal')" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <form class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Matière</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                                <option>Mathématiques</option>
+                                <option>Français</option>
+                                <option>Sciences</option>
+                                <option>Histoire</option>
+                                <option>EPS</option>
+                                <option>Arts</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Enseignant</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                                <option>Mme Fatou Diop</option>
+                                <option>M. Amadou Kane</option>
+                                <option>Mme Awa Sy</option>
+                                <option>M. Oumar Fall</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Jour</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                                <option>Lundi</option>
+                                <option>Mardi</option>
+                                <option>Mercredi</option>
+                                <option>Jeudi</option>
+                                <option>Vendredi</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Heure de début</label>
+                            <input type="time" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Heure de fin</label>
+                            <input type="time" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Salle</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-primary-blue">
+                                <option>Salle 201</option>
+                                <option>Salle 202</option>
+                                <option>Lab 1</option>
+                                <option>Cour de récréation</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-4 pt-6">
+                        <button type="button" onclick="closeModal('addCourseModal')" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                            Annuler
+                        </button>
+                        <button type="submit" class="px-6 py-2 bg-primary-yellow text-white rounded-lg hover:opacity-90">
+                            Ajouter le Cours
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fonctions pour les modals
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Menu mobile
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+
+        // Fonctions pour les actions
+        function editCourse(courseId) {
+            console.log('Modification du cours:', courseId);
+            openModal('addCourseModal');
+        }
+
+        function generateSchedule() {
+            console.log('Génération automatique de l\'emploi du temps...');
+        }
+
+        function exportSchedule() {
+            console.log('Export de l\'emploi du temps...');
+        }
+
+        function printSchedule() {
+            window.print();
+        }
+
+        function previousWeek() {
+            console.log('Semaine précédente');
+        }
+
+        function nextWeek() {
+            console.log('Semaine suivante');
+        }
+
+        // Gestion responsive de la sidebar
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 768) {
+                document.getElementById('sidebar').classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

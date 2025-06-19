@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture MySchool 221 - Schémas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tab {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .diagram-container {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .diagram-container.active {
+            display: block;
+        }
+
+        .diagram-title {
+            color: #667eea;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .architecture-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .service-group {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8edff 100%);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 5px solid;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .service-group:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .service-group.identity { border-left-color: #ff6b6b; }
+        .service-group.academic { border-left-color: #4ecdc4; }
+        .service-group.grading { border-left-color: #45b7d1; }
+        .service-group.attendance { border-left-color: #f9ca24; }
+        .service-group.schedule { border-left-color: #6c5ce7; }
+        .service-group.content { border-left-color: #a29bfe; }
+        .service-group.financial { border-left-color: #fd79a8; }
+        .service-group.communication { border-left-color: #00b894; }
+        .service-group.ai { border-left-color: #e17055; }
+        .service-group.file { border-left-color: #74b9ff; }
+        .service-group.analytics { border-left-color: #fdcb6e; }
+        .service-group.infrastructure { border-left-color: #636e72; }
+
+        .group-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2d3436;
+        }
+
+        .service-item {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #e0e6ed;
+            transition: all 0.3s ease;
+        }
+
+        .service-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.1);
+        }
+
+        .service-name {
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 5px;
+        }
+
+        .service-port {
+            font-size: 0.85rem;
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .service-desc {
+            font-size: 0.85rem;
+            color: #636e72;
+            margin-top: 5px;
+        }
+
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .flow-layer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .flow-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            min-width: 150px;
+        }
+
+        .flow-arrow {
+            font-size: 2rem;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .database-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .database-item {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .db-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .db-type {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .architecture-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏫 MySchool 221 - Architecture Microservices</h1>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showDiagram('overview')">Vue d'ensemble</button>
+            <button class="tab" onclick="showDiagram('services')">Services détaillés</button>
+            <button class="tab" onclick="showDiagram('flow')">Flux de données</button>
+            <button class="tab" onclick="showDiagram('databases')">Base de données</button>
+        </div>
+
+        <!-- Vue d'ensemble -->
+        <div id="overview" class="diagram-container active">
+            <h2 class="diagram-title">🎯 Architecture Générale</h2>
+            <div class="flow-diagram">
+                <div class="flow-layer">
+                    <div class="flow-box">🌐 API Gateway<br>(Kong + Rate Limiting)</div>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-layer">
+                    <div class="flow-box">💻 Web Frontend</div>
+                    <div class="flow-box">📱 Mobile App</div>
+                    <div class="flow-box">⚙️ Admin Console</div>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-layer">
+                    <div class="flow-box">🔐 Identity Services<br>(4 services)</div>
+                    <div class="flow-box">🎓 Academic Services<br>(4 services)</div>
+                    <div class="flow-box">📊 Grading Services<br>(4 services)</div>
+                    <div class="flow-box">📋 Attendance Services<br>(4 services)</div>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-layer">
+                    <div class="flow-box">📅 Schedule Services<br>(4 services)</div>
+                    <div class="flow-box">📚 Content Services<br>(4 services)</div>
+                    <div class="flow-box">💰 Financial Services<br>(4 services)</div>
+                    <div class="flow-box">📞 Communication Services<br>(5 services)</div>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-layer">
+                    <div class="flow-box">🤖 AI Services<br>(3 services)</div>
+                    <div class="flow-box">📁 File Services<br>(4 services)</div>
+                    <div class="flow-box">📈 Analytics Services<br>(4 services)</div>
+                    <div class="flow-box">🔧 Infrastructure Services<br>(4 services)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Services détaillés -->
+        <div id="services" class="diagram-container">
+            <h2 class="diagram-title">🔧 Services par Domaine</h2>
+            <div class="architecture-grid">
+                <!-- Identity Services -->
+                <div class="service-group identity">
+                    <div class="group-title">🔐 Identity & Security (Ports 3001-3004)</div>
+                    <div class="service-item">
+                        <div class="service-name">Authentication Service</div>
+                        <div class="service-port">Port 3001</div>
+                        <div class="service-desc">Login, MFA, Token validation</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-name">Authorization Service</div>
+                        <div class="service-port">Port 3002</div>
+                        <div class="service-desc">RBAC, Permissions, Policies</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-name">User Profile Service</div>
+                        <div class="service-port">Port 3003</div>
+                        <div class="service-desc">Profils, Préférences, Avatar</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-name">Organization Service</div>
+                        <div class="service-port">Port 3004</div>
+                        <div class="service-desc">Établissements, Configuration</div>
+                    </div>
+                </div>
+
+                <!-- Academic Services -->
+                <div class="service-group academic">
+                    <div class="group-title">🎓 Academic Domain (Ports 3010-3013)</div>
+                    <div class="service-item">
+                        <div class="service-name">Student Management</div>
+                        <div class="service-port">Port 3010</div>
+                        <div class="service-desc">Inscription, Transferts, Historique</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-name">Teacher Management</div>
+                        <div class="service-port">Port 3011</div>
+                        <div class="service-desc">Profils enseignants, Affectations</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-name">Class Management</div>
+                        <div class="service-port">Port 3012</div>
+                        <div class="service-desc">Classes, Niveaux, Effectifs</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-name">Subject Management</div>
+                        <div class="service-port">Port 3013</div>
+                        <div class="service-desc">Matières, Coefficients, Programmes</div>
+                    </div>
+                </div>
+
+                <!-- Grading Services -->
+                <div class="service-group grading">
+                    <div class="group-title">📊 Grading & Assessment (Ports 3020-3023)</div>
+                    <div class="service-item">
+                        <div class="service-name">Grade Entry Service</div>
+                        <div class="service-port">Port 3020</div>
+                        <div class="service-desc">Saisie notes, Validation, Historique</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-name">Grade Calculation</div>
+                        <div class="service-port">Port 3021</div>
+                        <div class="service-desc">Moyennes, Classements, Statistiques</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-name">Grade Consultation</div>
+                        <div class="service-port">Port 3022</div>
+                        <div class="service-desc">Consultation élèves/parents</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-name">Report Generation</div>
+                        <div class="service-port">Port 3023</div>
+                        <div class="service-desc">Bulletins PDF, Templates</div>
+                    </div>
+                </div>
+
+                <!-- Attendance Services -->
+                <div class="service-group attendance">
+                    <div class="group-title">📋 Attendance Domain (Ports 3030-3033)</div>
+                    <div class="service-item">
+                        <div class="service-name">Attendance Capture</div>
+                        <div class="service-port">Port 3030</div>
+                        <div class="service-desc">Pointage temps réel, QR Code</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-name">Absence Management</div>
+                        <div class="service-port">Port 3031</div>
+                        <div class="service-desc">Justifications, Workflow approbation</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-name">Attendance Analytics</div>
+                        <div class="service-port">Port 3032</div>
+                        <div class="service-desc">Statistiques, Détection patterns</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-name">Attendance Notifications</div>
+                        <div class="service-port">Port 3033</div>
+                        <div class="service-desc">Alertes absence, Seuils personnalisés</div>
+                    </div>
+                </div>
+
+                <!-- Schedule Services -->
+                <div class="service-group schedule">
+                    <div class="group-title">📅 Schedule & Timetable (Ports 3040-3043)</div>
+                    <div class="service-item">
+                        <div class="service-name">Timetable Management</div>
+                        <div class="service-port">Port 3040</div>
+                        <div class="service-desc">Création emplois temps, Optimisation</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-name">Room Management</div>
+                        <div class="service-port">Port 3041</div>
+                        <div class="service-desc">Salles, Réservations, Disponibilités</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-name">Schedule Consultation</div>
+                        <div class="service-port">Port 3042</div>
+                        <div class="service-desc">Consultation EDT, Export ICS</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-name">Schedule Changes</div>
+                        <div class="service-port">Port 3043</div>
+                        <div class="service-desc">Remplacements, Modifications</div>
+                    </div>
+                </div>
+
+                <!-- Communication Services -->
+                <div class="service-group communication">
+                    <div class="group-title">📞 Communication (Ports 3070-3074)</div>
+                    <div class="service-item">
+                        <div class="service-name">SMS Service</div>
+                        <div class="service-port">Port 3070</div>
+                        <div class="service-desc">Envoi SMS, Templates, Quotas</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-name">Email Service</div>
+                        <div class="service-port">Port 3071</div>
+                        <div class="service-desc">Emails HTML, Pièces jointes</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-name">Push Notifications</div>
+                        <div class="service-port">Port 3072</div>
+                        <div class="service-desc">iOS/Android, Segmentation</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-name">Internal Messaging</div>
+                        <div class="service-port">Port 3073</div>
+                        <div class="service-desc">Messages privés, Groupes</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-name">Announcements</div>
+                        <div class="service-port">Port 3074</div>
+                        <div class="service-desc">Annonces générales, Ciblage</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flux de données -->
+        <div id="flow" class="diagram-container">
+            <h2 class="diagram-title">🔄 Flux de Données Principaux</h2>
+            <div class="flow-diagram">
+                <h3 style="color: #667eea; margin-bottom: 20px;">Flux d'authentification</h3>
+                <div class="flow-layer">
+                    <div class="flow-box">👤 Utilisateur</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box">🌐 API Gateway</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box">🔐 Auth Service<br>(3001)</div>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-layer">
+                    <div class="flow-box">🔑 Authorization Service<br>(3002)</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box">👤 Profile Service<br>(3003)</div>
+                </div>
+                
+                <br><br>
+                <h3 style="color: #667eea; margin-bottom: 20px;">Flux de notation</h3>
+                <div class="flow-layer">
+                    <div class="flow-box">👨‍🏫 Enseignant</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box">📝 Grade Entry<br>(3020)</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box">🧮 Grade Calc<br>(3021)</div>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-layer">
+                    <div class="flow-box">📄 Report Gen<br>(3023)</div>
+                    <div class="flow-arrow">←</div>
+                    <div class="flow-box">👁️ Grade Consultation<br>(3022)</div>
+                </div>
+
+                <br><br>
+                <h3 style="color: #667eea; margin-bottom: 20px;">Flux de présence</h3>
+                <div class="flow-layer">
+                    <div class="flow-box">📱 Capture Présence<br>(3030)</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box">📊 Analytics<br>(3032)</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box">🔔 Notifications<br>(3033)</div>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-layer">
+                    <div class="flow-box">📞 SMS Service<br>(3070)</div>
+                    <div class="flow-box">📧 Email Service<br>(3071)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Base de données -->
+        <div id="databases" class="diagram-container">
+            <h2 class="diagram-title">🗄️ Architecture des Bases de Données</h2>
+            <div class="database-grid">
+                <!-- PostgreSQL Databases -->
+                <div class="database-item">
+                    <div class="db-name">🐘 PostgreSQL Cluster</div>
+                    <div class="db-type">Données transactionnelles</div>
+                    <div style="margin-top: 10px; font-size: 0.8rem;">
+                        • auth_db, profiles_db<br>
+                        • students_db, teachers_db<br>
+                        • grades_db, attendance_db<br>
+                        • schedules_db, payments_db
+                    </div>
+                </div>
+
+                <div class="database-item">
+                    <div class="db-name">📊 ClickHouse</div>
+                    <div class="db-type">Analytics & Métriques</div>
+                    <div style="margin-top: 10px; font-size: 0.8rem;">
+                        • attendance_analytics_db<br>
+                        • ai_analytics_db<br>
+                        • metrics_db<br>
+                        • audit_logs_db
+                    </div>
+                </div>
+
+                <div class="database-item">
+                    <div class="db-name">🍃 MongoDB</div>
+                    <div class="db-type">Documents & Fichiers</div>
+                    <div style="margin-top: 10px; font-size: 0.8rem;">
+                        • content_files_db<br>
+                        • conversations_db<br>
+                        • file_metadata<br>
+                        • document_storage
+                    </div>
+                </div>
+
+                <div class="database-item">
+                    <div class="db-name">🔍 Elasticsearch</div>
+                    <div class="db-type">Recherche & Knowledge Base</div>
+                    <div style="margin-top: 10px; font-size: 0.8rem;">
+                        • knowledge_base_db<br>
+                        • search_indexes<br>
+                        • content_search<br>
+                        • log_analysis
+                    </div>
+                </div>
+
+                <div class="database-item">
+                    <div class="db-name">⚡ Redis Cluster</div>
+                    <div class="db-type">Cache & Sessions</div>
+                    <div style="margin-top: 10px; font-size: 0.8rem;">
+                        • Session storage<br>
+                        • Rate limiting<br>
+                        • Pub/Sub messaging<br>
+                        • Distributed cache
+                    </div>
+                </div>
+
+                <div class="database-item">
+                    <div class="db-name">🗂️ MinIO/S3</div>
+                    <div class="db-type">Object Storage</div>
+                    <div style="margin-top: 10px; font-size: 0.8rem;">
+                        • Fichiers uploadés<br>
+                        • Images & médias<br>
+                        • Bulletins PDF<br>
+                        • Sauvegardes
+                    </div>
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #336791;"></div>
+                    <span>PostgreSQL - Données relationnelles</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ff6b08;"></div>
+                    <span>ClickHouse - Analytics temps réel</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4faa41;"></div>
+                    <span>MongoDB - Documents non-structurés</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #f4d03f;"></div>
+                    <span>Elasticsearch - Moteur de recherche</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #d63031;"></div>
+                    <span>Redis - Cache mémoire</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #c44569;"></div>
+                    <span>MinIO - Stockage objets</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showDiagram(diagramId) {
+            // Hide all diagrams
+            const diagrams = document.querySelectorAll('.diagram-container');
+            diagrams.forEach(diagram => diagram.classList.remove('active'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected diagram
+            document.getElementById(diagramId).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Add animation on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const serviceGroups = document.querySelectorAll('.service-group');
+            serviceGroups.forEach((group, index) => {
+                group.style.opacity = '0';
+                group.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    group.style.transition = 'all 0.5s ease';
+                    group.style.opacity = '1';
+                    group.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
