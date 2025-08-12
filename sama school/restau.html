@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Laseneg'a laise</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar-transition { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .senegalese-gradient { background: linear-gradient(135deg, #FFD700 0%, #FF6B35 50%, #8B4513 100%); }
+        .pulse-animation { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Sidebar -->
+    <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg sidebar-transition" id="sidebar">
+        <div class="flex items-center justify-center h-16 border-b border-gray-200 senegalese-gradient">
+            <h1 class="text-xl font-bold text-white">Laseneg'a laise</h1>
+        </div>
+        <nav class="mt-8">
+            <a href="#dashboard" class="flex items-center px-6 py-3 text-gray-600 hover:bg-yellow-50 hover:text-yellow-600 transition-colors bg-yellow-50 text-yellow-600 border-r-4 border-yellow-600">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                </svg>
+                Tableau de bord
+            </a>
+            <a href="#orders" class="flex items-center px-6 py-3 text-gray-600 hover:bg-yellow-50 hover:text-yellow-600 transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                Commandes
+            </a>
+            <a href="#reservations" class="flex items-center px-6 py-3 text-gray-600 hover:bg-yellow-50 hover:text-yellow-600 transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v16a2 2 0 002 2z" />
+                </svg>
+                Réservations
+            </a>
+            <a href="#menu" class="flex items-center px-6 py-3 text-gray-600 hover:bg-yellow-50 hover:text-yellow-600 transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                Menu
+            </a>
+            <a href="#customers" class="flex items-center px-6 py-3 text-gray-600 hover:bg-yellow-50 hover:text-yellow-600 transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                </svg>
+                Clients
+            </a>
+            <a href="#statistics" class="flex items-center px-6 py-3 text-gray-600 hover:bg-yellow-50 hover:text-yellow-600 transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                Statistiques
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-64 min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="flex items-center justify-between h-16 px-6">
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="lg:hidden text-gray-600 hover:text-gray-900">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                    <h2 class="text-xl font-semibold text-gray-800 ml-4">Tableau de bord</h2>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <button class="relative p-2 text-gray-600 hover:text-gray-900 focus:outline-none">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5-5-5 5h5zM15 17V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2z" />
+                            </svg>
+                            <span class="absolute top-0 right-0 block w-2 h-2 bg-red-500 rounded-full pulse-animation"></span>
+                        </button>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face&auto=format" alt="Admin" class="w-8 h-8 rounded-full">
+                        <span class="text-sm font-medium text-gray-700">Mme Arlette</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <main class="p-6" id="dashboard">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-sm p-6 card-hover transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Commandes du jour</p>
+                            <p class="text-2xl font-bold text-gray-900">24</p>
+                            <p class="text-sm text-green-600 mt-1">+12% vs hier</p>
+                        </div>
+                        <div class="p-3 bg-blue-100 rounded-full">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-6 card-hover transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Chiffre d'affaires</p>
+                            <p class="text-2xl font-bold text-gray-900">47 500 CFA</p>
+                            <p class="text-sm text-green-600 mt-1">+8% vs hier</p>
+                        </div>
+                        <div class="p-3 bg-green-100 rounded-full">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-6 card-hover transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Réservations</p>
+                            <p class="text-2xl font-bold text-gray-900">8</p>
+                            <p class="text-sm text-yellow-600 mt-1">2 en attente</p>
+                        </div>
+                        <div class="p-3 bg-yellow-100 rounded-full">
+                            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v16a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-6 card-hover transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Nouveaux clients</p>
+                            <p class="text-2xl font-bold text-gray-900">6</p>
+                            <p class="text-sm text-blue-600 mt-1">Cette semaine</p>
+                        </div>
+                        <div class="p-3 bg-purple-100 rounded-full">
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Évolution des ventes</h3>
+                    <canvas id="salesChart" width="400" height="200"></canvas>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Plats populaires</h3>
+                    <canvas id="popularDishesChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="bg-white rounded-lg shadow-sm">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Commandes récentes</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="text-xs text-gray-500 uppercase bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3">Commande</th>
+                                <th class="px-6 py-3">Client</th>
+                                <th class="px-6 py-3">Montant</th>
+                                <th class="px-6 py-3">Statut</th>
+                                <th class="px-6 py-3">Heure</th>
+                                <th class="px-6 py-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="px-6 py-4 font-medium text-gray-900">#ORD-2025-001</td>
+                                <td class="px-6 py-4">Aminata Diallo</td>
+                                <td class="px-6 py-4">3 500 CFA</td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Nouvelle</span>
+                                </td>
+                                <td class="px-6 py-4">14:30</td>
+                                <td class="px-6 py-4">
+                                    <button class="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700">Prête</button>
+                                </td>
+                            </tr>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="px-6 py-4 font-medium text-gray-900">#ORD-2025-002</td>
+                                <td class="px-6 py-4">Moussa Ndiaye</td>
+                                <td class="px-6 py-4">2 800 CFA</td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Prête</span>
+                                </td>
+                                <td class="px-6 py-4">14:15</td>
+                                <td class="px-6 py-4">
+                                    <button class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700">Récupérée</button>
+                                </td>
+                            </tr>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="px-6 py-4 font-medium text-gray-900">#ORD-2025-003</td>
+                                <td class="px-6 py-4">Fatou Sow</td>
+                                <td class="px-6 py-4">4 200 CFA</td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">Récupérée</span>
+                                </td>
+                                <td class="px-6 py-4">13:45</td>
+                                <td class="px-6 py-4">
+                                    <span class="text-gray-400">Terminée</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <!-- Orders Management Page -->
+        <div class="p-6 hidden" id="orders">
+            <div class="bg-white rounded-lg shadow-sm">
+                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-900">Gestion des commandes</h3>
+                    <div class="flex space-x-2">
+                        <select class="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            <option>Tous les statuts</option>
+                            <option>Nouvelle</option>
+                            <option>Prête</option>
+                            <option>Récupérée</option>
+                        </select>
+                        <button class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition-colors">
+                            Exporter
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="text-xs text-gray-500 uppercase bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3">Commande</th>
+                                <th class="px-6 py-3">Client</th>
+                                <th class="px-6 py-3">Plats</th>
+                                <th class="px-6 py-3">Montant</th>
+                                <th class="px-6 py-3">Statut</th>
+                                <th class="px-6 py-3">Date/Heure</th>
+                                <th class="px-6 py-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="px-6 py-4 font-medium text-gray-900">#ORD-2025-001</td>
+                                <td class="px-6 py-4">
+                                    <div>
+                                        <div class="font-medium">Aminata Diallo</div>
+                                        <div class="text-gray-500">+221 77 123 4567</div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm">
+                                        <div>2x Thiéboudienne</div>
+                                        <div>1x Attiéké poisson</div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 font-medium">3 500 CFA</td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Nouvelle</span>
+                                </td>
+                                <td class="px-6 py-4">14/07/2025 14:30</td>
+                                <td class="px-6 py-4">
+                                    <div class="flex space-x-2">
+                                        <button class="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700">Prête</button>
+                                        <button class="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700">Annuler</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu Management Page -->
+        <div class="p-6 hidden" id="menu">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-semibold text-gray-900">Gestion du menu</h3>
+                <button class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition-colors">
+                    Ajouter un plat
+                </button>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <div class="flex space-x-4">
+                        <button class="px-4 py-2 bg-yellow-600 text-white rounded-md">Tous</button>
+                        <button class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md">Plats principaux</button>
+                        <button class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md">Entrées</button>
+                        <button class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md">Boissons</button>
+                        <button class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md">Desserts</button>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+                    <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <img src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=300&h=200&fit=crop&auto=format" alt="Thiéboudienne" class="w-full h-48 object-cover rounded-md mb-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-semibold text-gray-900">Thiéboudienne</h4>
+                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">En stock</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">Riz au poisson traditionnel sénégalais avec légumes</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg font-bold text-yellow-600">2 500 CFA</span>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700">Modifier</button>
+                                <button class="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700">Supprimer</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=300&h=200&fit=crop&auto=format" alt="Attiéké" class="w-full h-48 object-cover rounded-md mb-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-semibold text-gray-900">Attiéké Poisson</h4>
+                            <span class="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">Épuisé</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">Couscous de manioc avec poisson grillé</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg font-bold text-yellow-600">2 000 CFA</span>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700">Modifier</button>
+                                <button class="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700">Supprimer</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <img src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=300&h=200&fit=crop&auto=format" alt="Yassa" class="w-full h-48 object-cover rounded-md mb-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-semibold text-gray-900">Yassa Poulet</h4>
+                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">En stock</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">Poulet mariné aux oignons et citron</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg font-bold text-yellow-600">2 800 CFA</span>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700">Modifier</button>
+                                <button class="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700">Supprimer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reservations Management Page -->
+        <div class="p-6 hidden" id="reservations">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-semibold text-gray-900">Gestion des réservations</h3>
+                <div class="flex space-x-2">
+                    <select class="px-3 py-2 border border-gray-300 rounded-md text-sm">
+                        <option>Aujourd'hui</option>
+                        <option>Cette semaine</option>
+                        <option>Ce mois</option>
+                    </select>
+                    <button class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition-colors">
+                        Nouvelle réservation
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-semibold text-gray-900">Aujourd'hui</h4>
+                        <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">8 réservations</span>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-medium text-sm">Ousmane Ba</p>
+                                <p class="text-xs text-gray-600">4 personnes - 19:00</p>
+                            </div>
+                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Confirmée</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-medium text-sm">Aïcha Ndoye</p>
+                                <p class="text-xs text-gray-600">2 personnes - 20:30</p>
+                            </div>
+                            <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">En attente</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-semibold text-gray-900">Demain</h4>
+                        <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">12 réservations</span>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-medium text-sm">Mamadou Diop</p>
+                                <p class="text-xs text-gray-600">6 personnes - 18:30</p>
+                            </div>
+                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Confirmée</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-medium text-sm">Bineta Fall</p>
+                                <p class="text-xs text-gray-600">3 personnes - 19:15</p>
+                            </div>
+                            <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">En attente</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-semibold text-gray-900">Cette semaine</h4>
+                        <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">35 réservations</span>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span>Lundi</span>
+                            <span class="font-medium">5</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span>Mardi</span>
+                            <span class="font-medium">8</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span>Mercredi</span>
+                            <span class="font-medium">12</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span>Jeudi</span>
+                            <span class="font-medium">10</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h4 class="font-semibold text-gray-900">Toutes les réservations</h4>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="text-xs text-gray-500 uppercase bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3">Client</th>
+                                <th class="px-6 py-3">Date</th>
+                                <th class="px-6 py-3">Heure</th>
+                                <th class="px-6 py-3">Personnes</th>
+                                <th class="px-6 py-3">Statut</th>
+                                <th class="px-6 py-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="px-6 py-4">
+                                    <div>
+                                        <div class="font-medium">Ousmane Ba</div>
+                                        <div class="text-gray-500">+221 77 987 6543</div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">14/07/2025</td>
+                                <td class="px-6 py-4">19:00</td>
+                                <td class="px-6 py-4">4</td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Confirmée</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex space-x-2">
+                                        <button class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700">Modifier</button>
+                                        <button class="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700">Annuler</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="px-6 py-4">
+                                    <div>
+                                        <div class="font-medium">Aïcha Ndoye</div>
+                                        <div class="text-gray-500">+221 76 543 2109</div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">14/07/2025</td>
+                                <td class="px-6 py-4">20:30</td>
+                                <td class="px-6 py-4">2</td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">En attente</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex space-x-2">
+                                        <button class="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700">Confirmer</button>
+                                        <button class="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700">Refuser</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customers Management Page -->
+        <div class="p-6 hidden" id="customers">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-semibold text-gray-900">Gestion des clients</h3>
+                <div class="flex space-x-2">
+                    <div class="relative">
+                        <input type="text" placeholder="Rechercher un client..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        <svg class="absolute left-3 top-2.5 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <button class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition-colors">
+                        Exporter
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-blue-100 rounded-full">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Total clients</p>
+                            <p class="text-2xl font-bold text-gray-900">247</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-green-100 rounded-full">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Nouveaux ce mois</p>
+                            <p class="text-2xl font-bold text-gray-900">18</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-purple-100 rounded-full">
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Clients fidèles</p>
+                            <p class="text-2xl font-bold text-gray-900">89</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h4 class="font-semibold text-gray-900">Liste des clients</h4>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="text-xs text-gray-500 uppercase bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3">Client</th>
+                                <th class="px-6 py-3">Email</th>
+                                <th class="px-6 py-3">Téléphone</th>
+                                <th class="px-6 py-3">Commandes</th>
+                                <th class="px-6 py-3">Total dépensé</th>
+                                <th class="px-6 py-3">Dernière visite</th>
+                                <th class="px-6 py-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center">
+                                        <img src="https://images.unsplash.com/photo-1494790108755-2616b811ba0a?w=40&h=40&fit=crop&crop=face&auto=format" alt="Client" class="w-8 h-8 rounded-full mr-3">
+                                        <div>
+                                            <div class="font-medium">Aminata Diallo</div>
+                                            <div class="text-gray-500">Cliente fidèle</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">aminata.diallo@email.com</td>
+                                <td class="px-6 py-4">+221 77 123 4567</td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">24 commandes</span>
+                                </td>
+                                <td class="px-6 py-4 font-medium">67 800 CFA</td>
+                                <td class="px-6 py-4">Aujourd'hui</td>
+    </div>
+
+    <!-- <script>
+        // Navigation functionality
+        const navLinks = document.querySelectorAll('nav a');
+        const sections = document.querySelectorAll('main > div, main');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').substring(1);
+                
+                // Update active nav item
+                navLinks.forEach(nav => nav.classList.remove('bg-yellow-50', 'text-yellow-600', 'border-r-4', 'border-yellow-600'));
+                link.classList.add('bg-yellow-50', 'text-yellow-600', 'border-r-4', 'border-yellow-600');
+                
+                // Show target section
+                sections.forEach(section => {
+                    if (section.id === targetId) {
+                        section.classList.remove('hidden');
+                    } else {
+                        section.classList.add('hidden');
+                    }
+                });
+            });
+        });
+
+        // Charts initialization
+        const salesCtx = document.getElementById('salesChart').getContext('2d');
+        new Chart(salesCtx, {
+            type: 'line',
+            data: {
+                labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+                datasets: [{
+                    label: 'Ventes (CFA)',
+                    data: [32000, 28000, 35000, 42000, 48000, 52000, 38000],
+                    borderColor: '#EAB308',
+                    backgroundColor: 'rgba(234, 179, 8, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString() + ' CFA';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        const popularDishesCtx = document.getElementById('popularDishesChart').getContext('2d');
+        new Chart(popularDishesCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Thiéboudienne', 'Attiéké Poisson', 'Yassa Poulet', 'Mafé', 'Autres'],
+                datasets: [{
+                    data: [35, 25, 20, 15, 5],
+                    backgroundColor: [
+                        '#EAB308',
+                        '#F59E0B',
+                        '#D97706',
+                        '#B45309',
+                        '#92400E'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Sidebar toggle for mobile
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        });
+
+        // Real-time updates simulation
+        setInterval(() => {
+            const orderCount = document.querySelector('.text-2xl.font-bold');
+            if (orderCount) {
+                const current = parseInt(orderCount.textContent);
+                if (Math.random() > 0.8) {
+                    orderCount.textContent = current + 1;
+                }
+            }
+        }, 30000);
+    </script> -->
+</body>
+</html>

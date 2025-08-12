@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Parent - Suivi Scolaire</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e40af',
+                        secondary: '#64748b',
+                        accent: '#0ea5e9',
+                        success: '#10b981',
+                        warning: '#f59e0b',
+                        danger: '#ef4444',
+                        neutral: '#f8fafc'
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-neutral font-sans antialiased">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center space-x-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-semibold text-gray-900">EduTrack</h1>
+                            <p class="text-xs text-gray-500">Suivi scolaire</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-6">
+                    <!-- Notifications -->
+                    <button class="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19c-5 0-8-3-8-6s4-6 9-6 9 3 9 6c0 1-1 3-2 3h-1l-1 1z"></path>
+                        </svg>
+                        <span class="absolute -top-1 -right-1 w-5 h-5 bg-danger text-white text-xs rounded-full flex items-center justify-center">3</span>
+                    </button>
+                    
+                    <!-- Sélecteur d'enfant -->
+                    <div class="flex items-center space-x-3">
+                        <label for="child-select" class="text-sm font-medium text-gray-700">Enfant</label>
+                        <select id="child-select" class="bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent shadow-sm min-w-48">
+                            <option value="emma">Emma Dupont - CM2</option>
+                            <option value="lucas">Lucas Dupont - 6ème</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Profile -->
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                            <span class="text-sm font-medium text-gray-700">MD</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 lg:px-8 py-8">
+        <!-- Student Overview -->
+        <div class="mb-8">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-r from-primary to-accent p-8 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-3xl font-bold mb-2">Emma Dupont</h2>
+                            <p class="text-blue-100 text-lg">CM2 • École Primaire Jean Jaurès</p>
+                            <p class="text-blue-200 text-sm mt-1">Année scolaire 2024-2025</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-white/20 backdrop-blur-sm">
+                                <div class="w-2 h-2 bg-success rounded-full mr-2"></div>
+                                Présente aujourd'hui
+                            </div>
+                            <div class="mt-3 text-right">
+                                <div class="text-2xl font-bold">16.2<span class="text-lg">/20</span></div>
+                                <div class="text-blue-200 text-sm">Moyenne générale</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Stats -->
+                <div class="p-6 bg-gray-50 border-t border-gray-100">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-gray-900">5</div>
+                            <div class="text-sm text-gray-600">Devoirs en cours</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-warning">2</div>
+                            <div class="text-sm text-gray-600">Évaluations à venir</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-success">0</div>
+                            <div class="text-sm text-gray-600">Absences ce mois</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-danger">1</div>
+                            <div class="text-sm text-gray-600">Paiement en attente</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            
+            <!-- Left Column - Main Cards -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- Annonces & Cahier de texte -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all cursor-pointer group">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900">Annonces</h3>
+                                    <p class="text-sm text-gray-500">Communications école</p>
+                                </div>
+                            </div>
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-danger text-white">3</span>
+                        </div>
+                        <div class="space-y-2">
+                            <p class="text-sm font-medium text-gray-900">Sortie scolaire vendredi</p>
+                            <p class="text-xs text-gray-500">Il y a 2 heures • Mme Martin</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all cursor-pointer group">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center group-hover:bg-green-100 transition-colors">
+                                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900">Cahier de texte</h3>
+                                    <p class="text-sm text-gray-500">Devoirs & leçons</p>
+                                </div>
+                            </div>
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-warning text-white">5</span>
+                        </div>
+                        <div class="space-y-2">
+                            <p class="text-sm font-medium text-gray-900">Mathématiques - Exercices p.42</p>
+                            <p class="text-xs text-gray-500">À rendre demain • M. Dubois</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Chart -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Évolution des notes</h3>
+                            <p class="text-sm text-gray-500">Derniers 3 mois</p>
+                        </div>
+                        <select class="text-sm border border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option>Toutes matières</option>
+                            <option>Mathématiques</option>
+                            <option>Français</option>
+                            <option>Histoire</option>
+                        </select>
+                    </div>
+                    <div class="h-64">
+                        <canvas id="gradesChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column - Secondary Cards -->
+            <div class="space-y-6">
+                
+                <!-- Emploi du temps -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900">Aujourd'hui</h3>
+                            <p class="text-sm text-gray-500">Emploi du temps</p>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Français</p>
+                                <p class="text-xs text-gray-500">Mme Durand</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-gray-900">14h00</p>
+                                <p class="text-xs text-gray-500">Salle 12</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-primary/5 rounded-lg border border-primary/20">
+                            <div>
+                                <p class="text-sm font-medium text-primary">Mathématiques</p>
+                                <p class="text-xs text-primary/70">M. Dubois</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-primary">15h00</p>
+                                <p class="text-xs text-primary/70">En cours</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Sport</p>
+                                <p class="text-xs text-gray-500">M. Leroy</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-gray-900">16h00</p>
+                                <p class="text-xs text-gray-500">Gymnase</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="font-semibold text-gray-900 mb-4">Actions rapides</h3>
+                    <div class="space-y-3">
+                        <button class="w-full flex items-center justify-between p-3 text-left hover:bg-gray-50 rounded-lg transition-colors">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-sm font-medium text-gray-900">Évaluations</span>
+                            </div>
+                            <span class="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full">2</span>
+                        </button>
+                        
+                        <button class="w-full flex items-center justify-between p-3 text-left hover:bg-gray-50 rounded-lg transition-colors">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-yellow-50 rounded-lg flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-sm font-medium text-gray-900">Paiements</span>
+                            </div>
+                            <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">1</span>
+                        </button>
+                        
+                        <button class="w-full flex items-center justify-between p-3 text-left hover:bg-gray-50 rounded-lg transition-colors">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-sm font-medium text-gray-900">Absences</span>
+                            </div>
+                            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">0</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="font-semibold text-gray-900 mb-4">Activité récente</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-2 h-2 bg-success rounded-full mt-2"></div>
+                            <div class="flex-1">
+                                <p class="text-sm text-gray-900">Note ajoutée en Mathématiques</p>
+                                <p class="text-xs text-gray-500">18/20 • Il y a 2h</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                            <div class="flex-1">
+                                <p class="text-sm text-gray-900">Devoir rendu en Français</p>
+                                <p class="text-xs text-gray-500">Rédaction • Il y a 1j</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="w-2 h-2 bg-warning rounded-full mt-2"></div>
+                            <div class="flex-1">
+                                <p class="text-sm text-gray-900">Évaluation programmée</p>
+                                <p class="text-xs text-gray-500">Histoire • Vendredi</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Chart.js configuration
+        const ctx = document.getElementById('gradesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Sept', 'Oct', 'Nov', 'Déc', 'Jan', 'Fév'],
+                datasets: [{
+                    label: 'Moyenne générale',
+                    data: [14.5, 15.2, 15.8, 16.1, 16.0, 16.2],
+                    borderColor: '#1e40af',
+                    backgroundColor: 'rgba(30, 64, 175, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#1e40af',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 10,
+                        max: 20,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            color: '#64748b'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#64748b'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Child selector functionality
+        document.getElementById('child-select').addEventListener('change', function(e) {
+            const childName = e.target.options[e.target.selectedIndex].text.split(' - ')[0];
+            document.querySelector('main h2').textContent = childName;
+        });
+
+        // Card interactions
+        document.querySelectorAll('.cursor-pointer').forEach(card => {
+            card.addEventListener('click', function() {
+                const title = this.querySelector('h3').textContent;
+                console.log(`Navigation vers: ${title}`);
+            });
+        });
+    </script>
+</body>
+</html>
