@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Administrateur - Gestion Multi-Établissements</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .school-card { height: 320px; }
+        .hover-scale { transition: all 0.3s ease; }
+        .hover-scale:hover { transform: scale(1.05); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+        .tab-active { background-color: #407CEE; color: white; }
+        .tab-inactive { background-color: rgba(255, 255, 255, 0.8); color: #64748b; }
+        .progress-bar { transition: width 0.3s ease; }
+        .animate-pulse-dot { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        .backdrop-blur { backdrop-filter: blur(8px); }
+        .bg-gradient-main { background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 50%, #e2e8f0 100%); }
+        .sidebar-item:hover { background-color: rgba(64, 124, 238, 0.1); border-color: rgba(64, 124, 238, 0.2); }
+        .sidebar-item:hover .sidebar-icon { color: #407CEE; }
+        .sidebar-item:hover .sidebar-text { color: #1e293b; }
+        .sidebar-item:hover .sidebar-badge { background-color: rgba(64, 124, 238, 0.1); color: #407CEE; }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-main">
+    <!-- Header -->
+    <header class="border-b bg-white/90 backdrop-blur shadow-sm sticky top-0 z-50">
+        <div class="flex h-16 items-center justify-between px-6">
+            <div class="flex items-center gap-4">
+                <div class="p-2 rounded-xl shadow-lg" style="background-color: #407CEE;">
+                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h4M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-800">Dashboard Administrateur</h1>
+                    <p class="text-xs text-slate-500">Gestion multi-établissements</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <button class="relative hover:bg-slate-100 transition-colors p-2 rounded-lg">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM9 7H4l5-5v5zm6 10V7a1 1 0 00-1-1H5a1 1 0 00-1 1v10a1 1 0 001 1h9a1 1 0 001-1z"></path>
+                    </svg>
+                    <span class="absolute -top-1 -right-1 h-3 w-3 rounded-full text-xs flex items-center justify-center text-white" style="background-color: #F7B000;">3</span>
+                </button>
+                <button class="hover:bg-slate-100 transition-colors p-2 rounded-lg">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </button>
+                <select class="w-64 bg-white/90 border-slate-200 hover:bg-white transition-colors px-3 py-2 rounded-lg border">
+                    <option>Toutes les écoles</option>
+                    <option>École Primaire Saint-Martin</option>
+                    <option>Collège Victor Hugo</option>
+                    <option>Lycée Jean Moulin</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="w-80 border-r bg-white/70 backdrop-blur p-6 shadow-sm">
+            <div class="space-y-1">
+                <button class="sidebar-item w-full justify-start gap-3 h-12 text-left border border-transparent transition-all duration-200 group flex items-center px-3 py-2 rounded-lg">
+                    <div class="p-1.5 rounded-lg bg-slate-100 group-hover:bg-blue-50 transition-colors">
+                        <svg class="sidebar-icon h-4 w-4 text-slate-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="sidebar-text font-medium text-slate-700 transition-colors">Gestion des élèves</div>
+                    </div>
+                    <span class="sidebar-badge ml-auto bg-slate-100 text-slate-600 transition-colors px-2 py-1 rounded-full text-xs">1145</span>
+                </button>
+
+                <button class="sidebar-item w-full justify-start gap-3 h-12 text-left border border-transparent transition-all duration-200 group flex items-center px-3 py-2 rounded-lg">
+                    <div class="p-1.5 rounded-lg bg-slate-100 group-hover:bg-blue-50 transition-colors">
+                        <svg class="sidebar-icon h-4 w-4 text-slate-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="sidebar-text font-medium text-slate-700 transition-colors">Gestion des classes</div>
+                    </div>
+                    <span class="sidebar-badge ml-auto bg-slate-100 text-slate-600 transition-colors px-2 py-1 rounded-full text-xs">48</span>
+                </button>
+
+                <button class="sidebar-item w-full justify-start gap-3 h-12 text-left border border-transparent transition-all duration-200 group flex items-center px-3 py-2 rounded-lg">
+                    <div class="p-1.5 rounded-lg bg-slate-100 group-hover:bg-blue-50 transition-colors">
+                        <svg class="sidebar-icon h-4 w-4 text-slate-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="sidebar-text font-medium text-slate-700 transition-colors">Gestion des paiements</div>
+                    </div>
+                    <span class="sidebar-badge ml-auto bg-slate-100 text-slate-600 transition-colors px-2 py-1 rounded-full text-xs">23</span>
+                </button>
+
+                <button class="sidebar-item w-full justify-start gap-3 h-12 text-left border border-transparent transition-all duration-200 group flex items-center px-3 py-2 rounded-lg">
+                    <div class="p-1.5 rounded-lg bg-slate-100 group-hover:bg-blue-50 transition-colors">
+                        <svg class="sidebar-icon h-4 w-4 text-slate-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="sidebar-text font-medium text-slate-700 transition-colors">Gestion des professeurs</div>
+                    </div>
+                    <span class="sidebar-badge ml-auto bg-slate-100 text-slate-600 transition-colors px-2 py-1 rounded-full text-xs">88</span>
+                </button>
+
+                <button class="sidebar-item w-full justify-start gap-3 h-12 text-left border border-transparent transition-all duration-200 group flex items-center px-3 py-2 rounded-lg">
+                    <div class="p-1.5 rounded-lg bg-slate-100 group-hover:bg-blue-50 transition-colors">
+                        <svg class="sidebar-icon h-4 w-4 text-slate-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="sidebar-text font-medium text-slate-700 transition-colors">Évaluations à venir</div>
+                    </div>
+                    <span class="sidebar-badge ml-auto bg-slate-100 text-slate-600 transition-colors px-2 py-1 rounded-full text-xs">12</span>
+                </button>
+
+                <button class="sidebar-item w-full justify-start gap-3 h-12 text-left border border-transparent transition-all duration-200 group flex items-center px-3 py-2 rounded-lg">
+                    <div class="p-1.5 rounded-lg bg-slate-100 group-hover:bg-blue-50 transition-colors">
+                        <svg class="sidebar-icon h-4 w-4 text-slate-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="sidebar-text font-medium text-slate-700 transition-colors">Gestion des notes</div>
+                    </div>
+                    <span class="sidebar-badge ml-auto bg-slate-100 text-slate-600 transition-colors px-2 py-1 rounded-full text-xs">156</span>
+                </button>
+
+                <button class="sidebar-item w-full justify-start gap-3 h-12 text-left border border-transparent transition-all duration-200 group flex items-center px-3 py-2 rounded-lg">
+                    <div class="p-1.5 rounded-lg bg-slate-100 group-hover:bg-blue-50 transition-colors">
+                        <svg class="sidebar-icon h-4 w-4 text-slate-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="sidebar-text font-medium text-slate-700 transition-colors">Cahiers de texte</div>
+                    </div>
+                    <span class="sidebar-badge ml-auto bg-slate-100 text-slate-600 transition-colors px-2 py-1 rounded-full text-xs">34</span>
+                </button>
+
+                <button class="sidebar-item w-full justify-start gap-3 h-12 text-left border border-transparent transition-all duration-200 group flex items-center px-3 py-2 rounded-lg">
+                    <div class="p-1.5 rounded-lg bg-slate-100 group-hover:bg-blue-50 transition-colors">
+                        <svg class="sidebar-icon h-4 w-4 text-slate-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="sidebar-text font-medium text-slate-700 transition-colors">Gestion des matières</div>
+                    </div>
+                    <span class="sidebar-badge ml-auto bg-slate-100 text-slate-600 transition-colors px-2 py-1 rounded-full text-xs">28</span>
+                </button>
+
+                <button class="sidebar-item w-full justify-start gap-3 h-12 text-left border border-transparent transition-all duration-200 group flex items-center px-3 py-2 rounded-lg">
+                    <div class="p-1.5 rounded-lg bg-slate-100 group-hover:bg-blue-50 transition-colors">
+                        <svg class="sidebar-icon h-4 w-4 text-slate-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="sidebar-text font-medium text-slate-700 transition-colors">Présences & Absences</div>
+                    </div>
+                    <span class="sidebar-badge ml-auto bg-slate-100 text-slate-600 transition-colors px-2 py-1 rounded-full text-xs">45</span>
+                </button>
+
+                <button class="sidebar-item w-full justify-start gap-3 h-12 text-left border border-transparent transition-all duration-200 group flex items-center px-3 py-2 rounded-lg">
+                    <div class="p-1.5 rounded-lg bg-slate-100 group-hover:bg-blue-50 transition-colors">
+                        <svg class="sidebar-icon h-4 w-4 text-slate-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="sidebar-text font-medium text-slate-700 transition-colors">Emplois du temps</div>
+                    </div>
+                    <span class="sidebar-badge ml-auto bg-slate-100 text-slate-600 transition-colors px-2 py-1 rounded-full text-xs">48</span>
+                </button>
+
+                <button class="sidebar-item w-full justify-start gap-3 h-12 text-left border border-transparent transition-all duration-200 group flex items-center px-3 py-2 rounded-lg">
+                    <div class="p-1.5 rounded-lg bg-slate-100 group-hover:bg-blue-50 transition-colors">
+                        <svg class="sidebar-icon h-4 w-4 text-slate-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="sidebar-text font-medium text-slate-700 transition-colors">Gestion des annonces</div>
+                    </div>
+                    <span class="sidebar-badge ml-auto bg-slate-100 text-slate-600 transition-colors px-2 py-1 rounded-full text-xs">8</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6">
+            <!-- Tabs -->
+            <div class="space-y-6">
+                <div class="grid w-full grid-cols-2 bg-white/80 backdrop-blur border border-slate-200 rounded-lg p-1">
+                    <button id="overviewTab" class="tab-active px-4 py-2 rounded-md text-sm font-medium transition-all duration-200">Vue d'ensemble</button>
+                    <button id="analyticsTab" class="tab-inactive px-4 py-2 rounded-md text-sm font-medium transition-all duration-200">Analyses</button>
+                </div>
+
+                <!-- Overview Content -->
+                <div id="overviewContent" class="space-y-6">
+                    <!-- Stats Cards -->
+                    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                        <div class="bg-white/90 backdrop-blur border-slate-200 hover:shadow-lg hover-scale transition-all duration-300 hover:border-blue-300 rounded-lg border p-6">
+                            <div class="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <h3 class="text-sm font-medium text-slate-600">Total Élèves</h3>
+                                <div class="p-2 rounded-lg" style="background-color: rgba(64, 124, 238, 0.1);">
+                                    <svg class="h-4 w-4" style="color: #407CEE;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold" style="color: #407CEE;">1145</div>
+                                <p class="text-xs text-slate-500 flex items-center gap-1 mt-1">
+                                    <svg class="h-3 w-3" style="color: #F7B000;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                    </svg>
+                                    <span class="font-medium" style="color: #F7B000;">+12% ce mois</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white/90 backdrop-blur border-slate-200 hover:shadow-lg hover-scale transition-all duration-300 hover:border-blue-300 rounded-lg border p-6">
+                            <div class="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <h3 class="text-sm font-medium text-slate-600">Professeurs</h3>
+                                <div class="p-2 rounded-lg" style="background-color: rgba(247, 176, 0, 0.1);">
+                                    <svg class="h-4 w-4" style="color: #F7B000;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold" style="color: #F7B000;">88</div>
+                                <p class="text-xs text-slate-500 flex items-center gap-1 mt-1">
+                                    <svg class="h-3 w-3" style="color: #407CEE;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                    </svg>
+                                    <span class="font-medium" style="color: #407CEE;">+3 nouveaux</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white/90 backdrop-blur border-slate-200 hover:shadow-lg hover-scale transition-all duration-300 hover:border-blue-300 rounded-lg border p-6">
+                            <div class="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <h3 class="text-sm font-medium text-slate-600">Taux de Présence</h3>
+                                <div class="p-2 rounded-lg" style="background-color: rgba(64, 124, 238, 0.1);">
+                                    <svg class="h-4 w-4" style="color: #407CEE;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold" style="color: #407CEE;">94.2%</div>
+                                <p class="text-xs text-slate-500 flex items-center gap-1 mt-1">
+                                    <svg class="h-3 w-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path>
+                                    </svg>
+                                    <span class="text-red-600 font-medium">-2.1% cette semaine</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white/90 backdrop-blur border-slate-200 hover:shadow-lg hover-scale transition-all duration-300 hover:border-blue-300 rounded-lg border p-6">
+                            <div class="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <h3 class="text-sm font-medium text-slate-600">Paiements en attente</h3>
+                                <div class="p-2 rounded-lg" style="background-color: rgba(247, 176, 0, 0.1);">
+                                    <svg class="h-4 w-4" style="color: #F7B000;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold" style="color: #F7B000;">23</div>
+                                <p class="text-xs text-slate-500 flex items-center gap-1 mt-1">
+                                    <svg class="h-3 w-3" style="color: #407CEE;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path>
+                                    </svg>
+                                    <span class="font-medium" style="color: #407CEE;">-5 depuis hier</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Schools Overview -->
+                    <div class="grid gap-6 md:grid-cols-3">
+                        <!-- École 1 -->
+                        <div class="school-card bg-white/90 backdrop-blur border-slate-200 hover:shadow-xl hover-scale transition-all duration-300 hover:border-blue-300 cursor-pointer flex flex-col rounded-lg border">
+                            <div class="pb-3 flex-shrink-0 p-6">
+                                <h3 class="text-lg text-slate-800 flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-slate-300 hover:bg-blue-500 transition-colors"></div>
+                                    <span class="truncate">École Primaire Saint-Martin</span>
+                                </h3>
+                            </div>
+                            <div class="space-y-4 flex-1 flex flex-col justify-between px-6 pb-6">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="text-center p-3 rounded-lg" style="background-color: rgba(64, 124, 238, 0.1);">
+                                        <div class="text-2xl font-bold" style="color: #407CEE;">245</div>
+                                        <div class="text-xs text-slate-500">Élèves</div>
+                                    </div>
+                                    <div class="text-center p-3 rounded-lg" style="background-color: rgba(247, 176, 0, 0.1);">
+                                        <div class="text-2xl font-bold" style="color: #F7B000;">18</div>
+                                        <div class="text-xs text-slate-500">Professeurs</div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-slate-600">Taux de présence</span>
+                                        <span class="font-semibold text-slate-800">92%</span>
+                                    </div>
+                                    <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                                        <div class="h-full rounded-full transition-all duration-300" style="width: 92%; background-color: #407CEE;"></div>
+                                    </div>
+                                </div>
+
+                                <button class="w-full text-white shadow-md hover:shadow-lg transition-all duration-200 mt-auto px-4 py-2 rounded-lg text-sm font-medium" style="background-color: #407CEE;">
+                                    Voir détails
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- École 2 -->
+                        <div class="school-card bg-white/90 backdrop-blur border-slate-200 hover:shadow-xl hover-scale transition-all duration-300 hover:border-blue-300 cursor-pointer flex flex-col rounded-lg border">
+                            <div class="pb-3 flex-shrink-0 p-6">
+                                <h3 class="text-lg text-slate-800 flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-slate-300 hover:bg-blue-500 transition-colors"></div>
+                                    <span class="truncate">Collège Victor Hugo</span>
+                                </h3>
+                            </div>
+                            <div class="space-y-4 flex-1 flex flex-col justify-between px-6 pb-6">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="text-center p-3 rounded-lg" style="background-color: rgba(64, 124, 238, 0.1);">
+                                        <div class="text-2xl font-bold" style="color: #407CEE;">380</div>
+                                        <div class="text-xs text-slate-500">Élèves</div>
+                                    </div>
+                                    <div class="text-center p-3 rounded-lg" style="background-color: rgba(247, 176, 0, 0.1);">
+                                        <div class="text-2xl font-bold" style="color: #F7B000;">28</div>
+                                        <div class="text-xs text-slate-500">Professeurs</div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-slate-600">Taux de présence</span>
+                                        <span class="font-semibold text-slate-800">92%</span>
+                                    </div>
+                                    <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                                        <div class="h-full rounded-full transition-all duration-300" style="width: 92%; background-color: #407CEE;"></div>
+                                    </div>
+                                </div>
+
+                                <button class="w-full text-white shadow-md hover:shadow-lg transition-all duration-200 mt-auto px-4 py-2 rounded-lg text-sm font-medium" style="background-color: #407CEE;">
+                                    Voir détails
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- École 3 -->
+                        <div class="school-card bg-white/90 backdrop-blur border-slate-200 hover:shadow-xl hover-scale transition-all duration-300 hover:border-blue-300 cursor-pointer flex flex-col rounded-lg border">
+                            <div class="pb-3 flex-shrink-0 p-6">
+                                <h3 class="text-lg text-slate-800 flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-slate-300 hover:bg-blue-500 transition-colors"></div>
+                                    <span class="truncate">Lycée Jean Moulin</span>
+                                </h3>
+                            </div>
+                            <div class="space-y-4 flex-1 flex flex-col justify-between px-6 pb-6">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="text-center p-3 rounded-lg" style="background-color: rgba(64, 124, 238, 0.1);">
+                                        <div class="text-2xl font-bold" style="color: #407CEE;">520</div>
+                                        <div class="text-xs text-slate-500">Élèves</div>
+                                    </div>
+                                    <div class="text-center p-3 rounded-lg" style="background-color: rgba(247, 176, 0, 0.1);">
+                                        <div class="text-2xl font-bold" style="color: #F7B000;">42</div>
+                                        <div class="text-xs text-slate-500">Professeurs</div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-slate-600">Taux de présence</span>
+                                        <span class="font-semibold text-slate-800">92%</span>
+                                    </div>
+                                    <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                                        <div class="h-full rounded-full transition-all duration-300" style="width: 92%; background-color: #407CEE;"></div>
+                                    </div>
+                                </div>
+
+                                <button class="w-full text-white shadow-md hover:shadow-lg transition-all duration-200 mt-auto px-4 py-2 rounded-lg text-sm font-medium" style="background-color: #407CEE;">
+                                    Voir détails
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activities -->
+                    <div class="bg-white/90 backdrop-blur border-slate-200 rounded-lg border">
+                        <div class="p-6">
+                            <h3 class="text-slate-800 flex items-center gap-2 text-lg font-semibold mb-4">
+                                <div class="w-2 h-2 rounded-full animate-pulse-dot" style="background-color: #407CEE;"></div>
+                                Activités récentes
+                            </h3>
+                        </div>
+                        <div class="px-6 pb-6">
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-4 p-4 rounded-xl border hover:shadow-md transition-all duration-200" style="background-color: rgba(64, 124, 238, 0.05); border-color: rgba(64, 124, 238, 0.1);">
+                                    <div class="h-3 w-3 rounded-full shadow-sm" style="background-color: #407CEE;"></div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-slate-800">Nouvelle inscription - Marie Dubois</p>
+                                        <p class="text-xs text-slate-500">École Primaire Saint-Martin • Il y a 2h</p>
+                                    </div>
+                                    <span class="px-2 py-1 rounded-full text-xs border" style="background-color: rgba(64, 124, 238, 0.1); color: #407CEE; border-color: rgba(64, 124, 238, 0.2);">Nouveau</span>
+                                </div>
+
+                                <div class="flex items-center gap-4 p-4 rounded-xl border hover:shadow-md transition-all duration-200" style="background-color: rgba(247, 176, 0, 0.05); border-color: rgba(247, 176, 0, 0.1);">
+                                    <div class="h-3 w-3 rounded-full shadow-sm" style="background-color: #F7B000;"></div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-slate-800">Évaluation programmée - Mathématiques CM2</p>
+                                        <p class="text-xs text-slate-500">Collège Victor Hugo • Il y a 4h</p>
+                                    </div>
+                                    <span class="px-2 py-1 rounded-full text-xs border" style="background-color: rgba(247, 176, 0, 0.1); color: #F7B000; border-color: rgba(247, 176, 0, 0.2);">Planifié</span>
+                                </div>
+
+                                <div class="flex items-center gap-4 p-4 rounded-xl border hover:shadow-md transition-all duration-200" style="background-color: rgba(64, 124, 238, 0.05); border-color: rgba(64, 124, 238, 0.1);">
+                                    <div class="h-3 w-3 rounded-full shadow-sm" style="background-color: #407CEE;"></div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-slate-800">Paiement reçu - Frais de scolarité</p>
+                                        <p class="text-xs text-slate-500">Lycée Jean Moulin • Il y a 6h</p>
+                                    </div>
+                                    <span class="px-2 py-1 rounded-full text-xs border" style="background-color: rgba(64, 124, 238, 0.1); color: #407CEE; border-color: rgba(64, 124, 238, 0.2);">Paiement</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Content -->
+                <div id="analyticsContent" class="space-y-6 hidden">
+                    <div class="grid gap-6 lg:grid-cols-2">
+                        <!-- Diagramme par sexe d'élèves -->
+                        <div class="bg-white/90 backdrop-blur border-slate-200 hover:shadow-lg transition-all duration-300 rounded-lg border">
+                            <div class="p-6">
+                                <h3 class="text-slate-800 flex items-center gap-2 text-lg font-semibold mb-4">
+                                    <div class="p-2 rounded-lg" style="background-color: rgba(64, 124, 238, 0.1);">
+                                        <svg class="h-5 w-5" style="color: #407CEE;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>
+                                        </svg>
+                                    </div>
+                                    Répartition par sexe
+                                </h3>
+                            </div>
+                            <div class="px-6 pb-6">
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-4 h-4 rounded-full" style="background-color: #407CEE;"></div>
+                                            <span class="text-sm font-medium text-slate-700">Garçons</span>
+                                        </div>
+                                        <span class="text-lg font-bold" style="color: #407CEE;">52%</span>
+                                    </div>
+                                    <div class="h-3 bg-slate-100 rounded-full overflow-hidden">
+                                        <div class="h-full rounded-full transition-all duration-300" style="width: 52%; background-color: #407CEE;"></div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-4 h-4 rounded-full" style="background-color: #F7B000;"></div>
+                                            <span class="text-sm font-medium text-slate-700">Filles</span>
+                                        </div>
+                                        <span class="text-lg font-bold" style="color: #F7B000;">48%</span>
+                                    </div>
+                                    <div class="h-3 bg-slate-100 rounded-full overflow-hidden">
+                                        <div class="h-full rounded-full transition-all duration-300" style="width: 48%; background-color: #F7B000;"></div>
+                                    </div>
+
+                                    <div class="mt-6 p-4 bg-slate-50 rounded-lg">
+                                        <div class="grid grid-cols-3 gap-4 text-center">
+                                            <div class="space-y-1">
+                                                <div class="text-xs font-medium text-slate-600 truncate">École</div>
+                                                <div class="text-sm">
+                                                    <span class="font-semibold" style="color: #407CEE;">127</span>
+                                                    <span class="text-slate-400 mx-1">/</span>
+                                                    <span class="font-semibold" style="color: #F7B000;">118</span>
+                                                </div>
+                                            </div>
+                                            <div class="space-y-1">
+                                                <div class="text-xs font-medium text-slate-600 truncate">Collège</div>
+                                                <div class="text-sm">
+                                                    <span class="font-semibold" style="color: #407CEE;">198</span>
+                                                    <span class="text-slate-400 mx-1">/</span>
+                                                    <span class="font-semibold" style="color: #F7B000;">182</span>
+                                                </div>
+                                            </div>
+                                            <div class="space-y-1">
+                                                <div class="text-xs font-medium text-slate-600 truncate">Lycée</div>
+                                                <div class="text-sm">
+                                                    <span class="font-semibold" style="color: #407CEE;">270</span>
+                                                    <span class="text-slate-400 mx-1">/</span>
+                                                    <span class="font-semibold" style="color: #F7B000;">250</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Diagramme d'évolution des paiements -->
+                        <div class="bg-white/90 backdrop-blur border-slate-200 hover:shadow-lg transition-all duration-300 rounded-lg border">
+                            <div class="p-6">
+                                <h3 class="text-slate-800 flex items-center gap-2 text-lg font-semibold mb-4">
+                                    <div class="p-2 rounded-lg" style="background-color: rgba(247, 176, 0, 0.1);">
+                                        <svg class="h-5 w-5" style="color: #F7B000;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+                                        </svg>
+                                    </div>
+                                    Évolution des paiements
+                                </h3>
+                            </div>
+                            <div class="px-6 pb-6">
+                                <div class="space-y-4">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm text-slate-600">Ce mois</span>
+                                        <span class="text-2xl font-bold" style="color: #F7B000;">€45,230</span>
+                                    </div>
+
+                                    <div class="space-y-3">
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-sm">
+                                                <span class="text-slate-600">Janvier</span>
+                                                <span class="font-semibold text-slate-800">€38,000</span>
+                                            </div>
+                                            <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 76%; background-color: #F7B000;"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-sm">
+                                                <span class="text-slate-600">Février</span>
+                                                <span class="font-semibold text-slate-800">€42,000</span>
+                                            </div>
+                                            <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 84%; background-color: #F7B000;"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-sm">
+                                                <span class="text-slate-600">Mars</span>
+                                                <span class="font-semibold text-slate-800">€39,000</span>
+                                            </div>
+                                            <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 78%; background-color: #F7B000;"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-sm">
+                                                <span class="text-slate-600">Avril</span>
+                                                <span class="font-semibold text-slate-800">€45,000</span>
+                                            </div>
+                                            <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 90%; background-color: #F7B000;"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-sm">
+                                                <span class="text-slate-600">Mai</span>
+                                                <span class="font-semibold text-slate-800">€47,000</span>
+                                            </div>
+                                            <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 94%; background-color: #F7B000;"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-sm">
+                                                <span class="text-slate-600">Juin</span>
+                                                <span class="font-semibold text-slate-800">€45,230</span>
+                                            </div>
+                                            <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 90.5%; background-color: #F7B000;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center gap-2 mt-4 p-3 rounded-lg" style="background-color: rgba(247, 176, 0, 0.1);">
+                                        <svg class="h-4 w-4" style="color: #F7B000;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                        </svg>
+                                        <span class="text-sm font-medium" style="color: #F7B000;">+8.5% par rapport au mois dernier</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Diagramme d'évolution des notes -->
+                    <div class="bg-white/90 backdrop-blur border-slate-200 hover:shadow-lg transition-all duration-300 rounded-lg border">
+                        <div class="p-6">
+                            <h3 class="text-slate-800 flex items-center gap-2 text-lg font-semibold mb-4">
+                                <div class="p-2 rounded-lg" style="background-color: rgba(64, 124, 238, 0.1);">
+                                    <svg class="h-5 w-5" style="color: #407CEE;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                </div>
+                                Évolution des notes moyennes
+                            </h3>
+                        </div>
+                        <div class="px-6 pb-6">
+                            <div class="grid gap-6 md:grid-cols-3">
+                                <!-- École Primaire Saint-Martin -->
+                                <div class="space-y-4">
+                                    <div class="text-center">
+                                        <h4 class="font-semibold text-slate-800 text-sm truncate">École Primaire Saint-Martin</h4>
+                                        <div class="text-2xl font-bold mt-1" style="color: #407CEE;">15.2/20</div>
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-slate-500">Jan</span>
+                                                <span class="font-medium text-slate-700">14.2</span>
+                                            </div>
+                                            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 71%; background-color: #407CEE;"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-slate-500">Fév</span>
+                                                <span class="font-medium text-slate-700">13.8</span>
+                                            </div>
+                                            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 69%; background-color: #407CEE;"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-slate-500">Mar</span>
+                                                <span class="font-medium text-slate-700">14.5</span>
+                                            </div>
+                                            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 72.5%; background-color: #407CEE;"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-slate-500">Avr</span>
+                                                <span class="font-medium text-slate-700">15.1</span>
+                                            </div>
+                                            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 75.5%; background-color: #407CEE;"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-slate-500">Mai</span>
+                                                <span class="font-medium text-slate-700">14.8</span>
+                                            </div>
+                                            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 74%; background-color: #407CEE;"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-slate-500">Juin</span>
+                                                <span class="font-medium text-slate-700">15.2</span>
+                                            </div>
+                                            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 76%; background-color: #407CEE;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-center gap-1 p-2 rounded-lg" style="background-color: rgba(64, 124, 238, 0.1);">
+                                        <svg class="h-3 w-3" style="color: #407CEE;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                        </svg>
+                                        <span class="text-xs font-medium" style="color: #407CEE;">+7.0%</span>
+                                    </div>
+                                </div>
+
+                                <!-- Collège Victor Hugo -->
+                                <div class="space-y-4">
+                                    <div class="text-center">
+                                        <h4 class="font-semibold text-slate-800 text-sm truncate">Collège Victor Hugo</h4>
+                                        <div class="text-2xl font-bold mt-1" style="color: #407CEE;">14.7/20</div>
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-slate-500">Jan</span>
+                                                <span class="font-medium text-slate-700">13.5</span>
+                                            </div>
+                                            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 67.5%; background-color: #407CEE;"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-slate-500">Fév</span>
+                                                <span class="font-medium text-slate-700">13.9</span>
+                                            </div>
+                                            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 69.5%; background-color: #407CEE;"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-slate-500">Mar</span>
+                                                <span class="font-medium text-slate-700">14.2</span>
+                                            </div>
+                                            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 71%; background-color: #407CEE;"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-slate-500">Avr</span>
+                                                <span class="font-medium text-slate-700">14.6</span>
+                                            </div>
+                                            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 73%; background-color: #407CEE;"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-slate-500">Mai</span>
+                                                <span class="font-medium text-slate-700">14.3</span>
+                                            </div>
+                                            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 71.5%; background-color: #407CEE;"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-slate-500">Juin</span>
+                                                <span class="font-medium text-slate-700">14.7</span>
+                                            </div>
+                                            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 73.5%; background-color: #407CEE;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-center gap-1 p-2 rounded-lg" style="background-color: rgba(64, 124, 238, 0.1);">
+                                        <svg class="h-3 w-3" style="color: #407CEE;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                        </svg>
+                                        <span class="text-xs font-medium" style="color: #407CEE;">+8.9%</span>
+                                    </div>
+                                </div>
+
+                                <!-- Lycée Jean Moulin -->
+                                <div class="space-y-4">
+                                    <div class="text-center">
+                                        <h4 class="font-semibold text-slate-800 text-sm truncate">Lycée Jean Moulin</h4>
+                                        <div class="text-2xl font-bold mt-1" style="color: #407CEE;">15.8/20</div>
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-slate-500">Jan</span>
+                                                <span class="font-medium text-slate-700">15.1</span>
+                                            </div>
+                                            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 75.5%; background-color: #407CEE;"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-slate-500">Fév</span>
+                                                <span class="font-medium text-slate-700">14.8</span>
+                                            </div>
+                                            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 74%; background-color: #407CEE;"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-slate-500">Mar</span>
+                                                <span class="font-medium text-slate-700">15.3</span>
+                                            </div>
+                                            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 76.5%; background-color: #407CEE;"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-slate-500">Avr</span>
+                                                <span class="font-medium text-slate-700">15.6</span>
+                                            </div>
+                                            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 78%; background-color: #407CEE;"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-slate-500">Mai</span>
+                                                <span class="font-medium text-slate-700">15.4</span>
+                                            </div>
+                                            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 77%; background-color: #407CEE;"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-slate-500">Juin</span>
+                                                <span class="font-medium text-slate-700">15.8</span>
+                                            </div>
+                                            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-300" style="width: 79%; background-color: #407CEE;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-center gap-1 p-2 rounded-lg" style="background-color: rgba(64, 124, 238, 0.1);">
+                                        <svg class="h-3 w-3" style="color: #407CEE;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                        </svg>
+                                        <span class="text-xs font-medium" style="color: #407CEE;">+4.6%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Tab functionality
+        const overviewTab = document.getElementById('overviewTab');
+        const analyticsTab = document.getElementById('analyticsTab');
+        const overviewContent = document.getElementById('overviewContent');
+        const analyticsContent = document.getElementById('analyticsContent');
+
+        overviewTab.addEventListener('click', () => {
+            overviewTab.className = 'tab-active px-4 py-2 rounded-md text-sm font-medium transition-all duration-200';
+            analyticsTab.className = 'tab-inactive px-4 py-2 rounded-md text-sm font-medium transition-all duration-200';
+            overviewContent.classList.remove('hidden');
+            analyticsContent.classList.add('hidden');
+        });
+
+        analyticsTab.addEventListener('click', () => {
+            analyticsTab.className = 'tab-active px-4 py-2 rounded-md text-sm font-medium transition-all duration-200';
+            overviewTab.className = 'tab-inactive px-4 py-2 rounded-md text-sm font-medium transition-all duration-200';
+            analyticsContent.classList.remove('hidden');
+            overviewContent.classList.add('hidden');
+        });
+
+        // Hover effects for school cards
+        const schoolCards = document.querySelectorAll('.school-card');
+        schoolCards.forEach((card, index) => {
+            const dot = card.querySelector('.w-3.h-3');
+            card.addEventListener('mouseenter', () => {
+                if (dot) dot.style.backgroundColor = '#407CEE';
+            });
+            card.addEventListener('mouseleave', () => {
+                if (dot) dot.style.backgroundColor = '#cbd5e1';
+            });
+        });
+    </script>
+</body>
+</html>
